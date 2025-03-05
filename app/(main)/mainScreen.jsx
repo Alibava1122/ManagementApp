@@ -218,14 +218,14 @@ const MainScreen = () => {
         <ScrollView style={styles.container}>
           {/* first flatList    */}
 
-         <View style={{height:200}}>
+         <View >
          <DroppedMainTiles
             droppedTiles={droppedTiles}
             setDroppedTiles={setDroppedTiles}
           />
          </View>
 
-         <View style={{height:200}}>
+         <View >
          {DroppedFocusedSecond.length == 0 ? null : (
             <>
               <DropedFocusedCard
@@ -237,14 +237,14 @@ const MainScreen = () => {
           )}
          </View>
 
-         <View style={{height:200}}>
+         <View >
          <DroppedAnalyticsCard
             droppedAnalyticsTiles={droppedAnalyticsTiles}
             setAnalyticsDroppedTiles={setAnalyticsDroppedTiles}
           />
          </View>
 
-         <View style={{height:200}}>
+         <View >
          <DroppedRiskCard
             droppedRiskTiles={droppedRiskTiles}
             setDroppedRiskTiles={setDroppedRiskTiles}
