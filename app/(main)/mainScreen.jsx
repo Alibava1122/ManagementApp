@@ -179,15 +179,11 @@ const MainScreen = () => {
   };
 
   // Update the handleDragStart function
-  const handleDragStart = (tile, position) => {
+  const handleDragStart = (tile, tileType) => {
     setDraggedTile({ 
       ...tile, 
-      type: tileType,
+      type: tileType 
     });
-    
-    // Set the initial position where the tile was grabbed
-    setInitialPosition(position);
-    
     // Close all modals
     setIsModalVisible(false);
     setIsModelNames(false);
@@ -203,8 +199,7 @@ const MainScreen = () => {
         styles.draggedTile,
         {
           position: 'absolute',
-          left: initialPosition.x + dragPosition.x._value,
-          top: initialPosition.y + dragPosition.y._value,
+          transform: dragPosition.getTranslateTransform(),
           backgroundColor: draggedTile.colorCode,
           width: width * 0.8,
           height: 170,

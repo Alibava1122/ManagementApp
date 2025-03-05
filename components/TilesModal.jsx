@@ -14,22 +14,12 @@ const { width } = Dimensions.get("window");
 
 const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, onDragStart }) => {
   const slideAnim = useRef(new Animated.Value(-width * 0.6)).current;
-  const panRefs = useRef({});
  
   const [availableTiles] = useState([
     { id: 1, title: "Total", title2: "Portfolio", colorCode:'#f3d9fd',  Amount: "£1000", image: require("../assets/images/graph2.png") },
     { id: 2, title: "Custom", title2: "Portfolio", colorCode:'#fcfbca',  Amount: "£2000", image: require("../assets/images/circleG.png") },
     { id: 3, title: "Total", title2: "Portfolio", colorCode:'#f3d9fd', Amount: "£3000", image: require("../assets/images/salesGraph.webp") },
   ]);
-
-  // Initialize panRefs when component mounts
-  useEffect(() => {
-    availableTiles.forEach(tile => {
-      if (!panRefs.current[tile.id]) {
-        panRefs.current[tile.id] = new Animated.ValueXY();
-      }
-    });
-  }, []); // Empty dependency array means this runs once on mount
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -43,12 +33,8 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, o
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
 
-    onPanResponderGrant: (e, gestureState) => {
-      // Get the touch position
-      const { pageX, pageY } = e.nativeEvent;
-      // Call onDragStart with the tile and position
-      onDragStart(tile, { x: pageX, y: pageY });
-      // Close modal
+    onPanResponderGrant: () => {
+      onDragStart(tile);
       setIsTilesModalVisible(false);
     },
 
