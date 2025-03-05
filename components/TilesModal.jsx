@@ -47,25 +47,34 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile })
             }
             const pan = panRefs.current[tile.id];
 
-            const panResponder = PanResponder.create({
-              onStartShouldSetPanResponder: () => true,
-              onPanResponderMove: Animated.event(
-                [null, { dx: pan.x, dy: pan.y }],
-                { useNativeDriver: false }
-              ),
-              onPanResponderRelease: (event, gestureState) => {
-                if (gestureState.moveY > 300) {
-                  // Ensure a copy of the tile is added
-                  onDropTile({ ...tile, id: Date.now() }); 
-                  setIsTilesModalVisible(false);
-                } else {
-                  Animated.spring(pan, {
-                    toValue: { x: 0, y: 0 },
-                    useNativeDriver: false,
-                  }).start();
-                }
-              },
-            });
+          const panResponder = PanResponder.create({
+  onStartShouldSetPanResponder: () => true,
+
+  onPanResponderGrant: () => {
+    setIsTilesModalVisible(false); // Close modal when user starts holding the tile
+    pan.setOffset({ x: pan.x._value, y: pan.y._value });
+    pan.setValue({ x: 0, y: 0 });
+  },
+
+  onPanResponderMove: Animated.event(
+    [null, { dx: pan.x, dy: pan.y }],
+    { useNativeDriver: false }
+  ),
+
+  onPanResponderRelease: (event, gestureState) => {
+    pan.flattenOffset();
+
+    if (gestureState.moveY > 300) {
+      onDropTile({ ...tile, id: Date.now() });
+    } else {
+      Animated.spring(pan, {
+        toValue: { x: 0, y: 0 },
+        useNativeDriver: false,
+      }).start();
+    }
+  },
+});
+
 
             return (
               <Animated.View
