@@ -42,16 +42,15 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, o
     onMoveShouldSetPanResponder: () => true,
 
     onPanResponderGrant: (e, gesture) => {
-      // Get the position of the touch
-      const { pageX, pageY } = e.nativeEvent;
+      // Close modal immediately when starting to drag
+      setIsTilesModalVisible(false);
       
-      // Call onDragStart with the tile and its position
+      // Call onDragStart with the tile
       onDragStart(tile);
     },
 
     onPanResponderMove: () => {
       // We don't need to handle move in the modal
-      // The dragged tile in MainScreen will handle movement
     },
 
     onPanResponderRelease: (e, gesture) => {
