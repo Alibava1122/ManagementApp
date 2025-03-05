@@ -22,6 +22,15 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, o
     { id: 3, title: "Total", title2: "Portfolio", colorCode:'#f3d9fd', Amount: "£3000", image: require("../assets/images/salesGraph.webp") },
   ]);
 
+  // Initialize panRefs when component mounts
+  useEffect(() => {
+    availableTiles.forEach(tile => {
+      if (!panRefs.current[tile.id]) {
+        panRefs.current[tile.id] = new Animated.ValueXY();
+      }
+    });
+  }, []); // Empty dependency array means this runs once on mount
+
   useEffect(() => {
     Animated.timing(slideAnim, {
       toValue: isTilesModalVisible ? 0 : -width * 0.6,
@@ -35,18 +44,13 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, o
     onMoveShouldSetPanResponder: () => true,
 
     onPanResponderGrant: () => {
-      // First trigger onDragStart to create the draggable tile
       onDragStart(tile);
-      // Then close the modal
-      setTimeout(() => {
-        setIsTilesModalVisible(false);
-      }, 100);
+      setIsTilesModalVisible(false);
     },
 
-    onPanResponderMove: Animated.event(
-      [null, { dx: panRefs.current[tile.id].x, dy: panRefs.current[tile.id].y }],
-      { useNativeDriver: false }
-    ),
+    onPanResponderMove: () => {
+      // Remove the Animated.event since we're handling dragging in MainScreen
+    },
 
     onPanResponderRelease: (e, gesture) => {
       if (gesture.moveY > 300) {
@@ -54,16 +58,6 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, o
       }
     },
   });
-
-  useEffect(() => {
-    if (isTilesModalVisible) {
-      availableTiles.forEach(tile => {
-        if (!panRefs.current[tile.id]) {
-          panRefs.current[tile.id] = new Animated.ValueXY();
-        }
-      });
-    }
-  }, [isTilesModalVisible]);
 
   return (
     isTilesModalVisible && (
@@ -75,13 +69,7 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, o
               {...createPanResponder(tile).panHandlers}
               style={[
                 styles.tileContainer,
-                {backgroundColor: tile.colorCode},
-                {
-                  transform: [
-                    {translateX: panRefs.current[tile.id]?.x || 0},
-                    {translateY: panRefs.current[tile.id]?.y || 0}
-                  ]
-                }
+                {backgroundColor: tile.colorCode}
               ]}
             >
               <View style={styles.imageContainerText}>
