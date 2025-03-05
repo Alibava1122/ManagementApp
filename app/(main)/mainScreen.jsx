@@ -177,14 +177,60 @@ const MainScreen = () => {
     });
   };
 
-  // Add this new function to handle drag start
+  // Update the handleDragStart function
   const handleDragStart = (tile, tileType) => {
-    setDraggedTile({ ...tile, type: tileType });
+    setDraggedTile({ 
+      ...tile, 
+      type: tileType,
+      // Add initial position where the tile was grabbed
+      initialX: 0,
+      initialY: 0
+    });
+    // Close all modals when drag starts
     setIsModalVisible(false);
     setIsModelNames(false);
+    setIsTilesModalVisible(false);
     setIsAnalyticsTilesModel(false);
     setIsRiskTilesModel(false);
   };
+
+  // Update the draggedTile render code
+  {draggedTile && (
+    <Animated.View
+      style={[
+        styles.draggedTile,
+        {
+          position: 'absolute',
+          left: dragPosition.x,
+          top: dragPosition.y,
+          backgroundColor: draggedTile.colorCode,
+          width: 300, // Match your tile width
+          height: 170, // Match your tile height
+          zIndex: 1000,
+        },
+      ]}
+      {...PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderMove: Animated.event(
+          [null, { dx: dragPosition.x, dy: dragPosition.y }],
+          { useNativeDriver: false }
+        ),
+        onPanResponderRelease: handleDragEnd,
+      }).panHandlers}
+    >
+      <View style={styles.imageContainerText}>
+        <View>
+          <Text style={styles.headerText}>{draggedTile.title}</Text>
+          <Text style={styles.headerText}>{draggedTile.title2}</Text>
+          <Text style={styles.headerTextAmount}>{draggedTile.Amount}</Text>
+        </View>
+      </View>
+      <View style={styles.imageContainer}>
+        <Image source={draggedTile.image} style={styles.image} resizeMode="contain" />
+      </View>
+    </Animated.View>
+  )}
 
   // Add this function to handle drag end
   const handleDragEnd = (event, gestureState) => {
@@ -369,31 +415,6 @@ const MainScreen = () => {
         onDropRiskTile={handleDropRiskTile}
         onDragStart={(tile) => handleDragStart(tile, 'risk')}
       />
-
-      {draggedTile && (
-        <Animated.View
-          style={[
-            styles.draggedTile,
-            {
-              transform: dragPosition.getTranslateTransform(),
-              backgroundColor: draggedTile.colorCode,
-            },
-          ]}
-          {...PanResponder.create({
-            onStartShouldSetPanResponder: () => true,
-            onPanResponderMove: Animated.event(
-              [null, { dx: dragPosition.x, dy: dragPosition.y }],
-              { useNativeDriver: false }
-            ),
-            onPanResponderRelease: handleDragEnd,
-          }).panHandlers}
-        >
-          {/* Render tile content based on draggedTile type */}
-          {draggedTile.image && (
-            <Image source={draggedTile.image} style={styles.draggedTileImage} />
-          )}
-        </Animated.View>
-      )}
     </>
   );
 };
@@ -591,6 +612,29 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     resizeMode: 'contain',
+  },
+
+  imageContainerText: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+  },
+  headerText: {
+    fontSize: 16,
+    fontFamily: 'Merriweather-Bold',
+    color: 'black',
+  },
+  headerTextAmount: {
+    fontSize: 14,
+    fontFamily: 'Merriweather-Bold',
+    color: 'black',
+  },
+  imageContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
 });
 

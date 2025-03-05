@@ -37,58 +37,55 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, o
     }
   }, [isTilesModalVisible]);
 
+  const createPanResponder = (tile) => PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+
+    onPanResponderGrant: (e, gesture) => {
+      // Get the position of the touch
+      const { pageX, pageY } = e.nativeEvent;
+      
+      // Call onDragStart with the tile and its position
+      onDragStart(tile);
+    },
+
+    onPanResponderMove: () => {
+      // We don't need to handle move in the modal
+      // The dragged tile in MainScreen will handle movement
+    },
+
+    onPanResponderRelease: (e, gesture) => {
+      if (gesture.moveY > 300) {
+        onDropTile({ ...tile, id: Date.now() });
+      }
+    },
+  });
+
   return (
     isTilesModalVisible && (
       <Animated.View style={[styles.modalContainer, { transform: [{ translateX: slideAnim }] }]}>
         <View style={styles.modalContent}>
-          {availableTiles.map((tile) => {
-            if (!panRefs.current[tile.id]) {
-              panRefs.current[tile.id] = new Animated.ValueXY();
-            }
-            const pan = panRefs.current[tile.id];
-
-            const panResponder = PanResponder.create({
-              onStartShouldSetPanResponder: () => true,
-              onMoveShouldSetPanResponder: () => true,
-
-              onPanResponderGrant: () => {
-                onDragStart(tile);
-                setIsTilesModalVisible(false);
-              },
-
-              onPanResponderMove: (e, gesture) => {
-                // Optional: Add any move handling if needed
-              },
-
-              onPanResponderRelease: (e, gesture) => {
-                if (gesture.moveY > 300) {
-                  onDropTile({ ...tile, id: Date.now() });
-                }
-              },
-            });
-
-            return (
-              <Animated.View
-                key={tile.id}
-                {...panResponder.panHandlers}
-                style={[
-                  styles.tileContainer,
-                  {backgroundColor: tile.colorCode},
-                ]}
-              >
-                <View style={styles.imageContainerText}>
-                  <View>
-                    <Text style={styles.headerText}>{tile.title}</Text>
-                    <Text style={styles.headerText}>{tile.title2}</Text>
-                    <Text style={styles.headerTextAmount}>{tile.Amount}</Text>
-                  </View>
+          {availableTiles.map((tile) => (
+            <Animated.View
+              key={tile.id}
+              {...createPanResponder(tile).panHandlers}
+              style={[
+                styles.tileContainer,
+                {backgroundColor: tile.colorCode}
+              ]}
+            >
+              <View style={styles.imageContainerText}>
+                <View>
+                  <Text style={styles.headerText}>{tile.title}</Text>
+                  <Text style={styles.headerText}>{tile.title2}</Text>
+                  <Text style={styles.headerTextAmount}>{tile.Amount}</Text>
                 </View>
-                <View style={styles.imageContainer}>
-                  <Image source={tile.image} style={styles.image} resizeMode="contain" />
-                </View>
-              </Animated.View>
-            );
-          })}
+              </View>
+              <View style={styles.imageContainer}>
+                <Image source={tile.image} style={styles.image} resizeMode="contain" />
+              </View>
+            </Animated.View>
+          ))}
 
           <TouchableOpacity onPress={() => setIsTilesModalVisible(false)} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Close</Text>
