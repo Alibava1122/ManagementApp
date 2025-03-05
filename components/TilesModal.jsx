@@ -55,7 +55,6 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile })
               ),
               onPanResponderRelease: (event, gestureState) => {
                 if (gestureState.moveY > 300) {
-                  // Ensure a copy of the tile is added
                   onDropTile({ ...tile, id: Date.now() }); 
                   setIsTilesModalVisible(false);
                 } else {

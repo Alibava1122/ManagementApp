@@ -23,7 +23,7 @@ import { router } from "expo-router";
 import DropedFocusedCard from "../../components/DropedFocusedCard";
 import DroppedAnalyticsCard from "../../components/DroppedAnalyticsCard";
 import DroppedRiskCard from "../../components/DroppedRiskCard";
-import DroppedMainTiles from "../../components/DroppedMainTiles";
+import DroppedMainTilesCard from "../../components/DroppedMainTilesCard";
 
 const { width } = Dimensions.get("window");
 
@@ -219,7 +219,7 @@ const MainScreen = () => {
           {/* first flatList    */}
 
          <View >
-         <DroppedMainTiles
+         <DroppedMainTilesCard
             droppedTiles={droppedTiles}
             setDroppedTiles={setDroppedTiles}
           />
