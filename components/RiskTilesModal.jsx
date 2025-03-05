@@ -12,7 +12,7 @@ import {
   import React, { useEffect, useRef, useState } from "react";
   const { width } = Dimensions.get("window");
   
-  const RiskTilesModal = ({ isRiskTilesModel, setIsRiskTilesModel,  onDropRiskTile }) => {
+  const RiskTilesModal = ({ isRiskTilesModel, setIsRiskTilesModel, onDropRiskTile, onDragStart }) => {
     const [draggedTile, setDraggedTile] = useState(null);
     const slideAnim = useRef(new Animated.Value(-width * 0.6)).current;
     const panRefs = useRef({});
@@ -49,21 +49,8 @@ import {
               const pan = panRefs.current[tile.id];
               const panResponder = PanResponder.create({
                 onStartShouldSetPanResponder: () => true,
-                onPanResponderMove: Animated.event(
-                  [null, { dx: pan.x, dy: pan.y }],
-                  { useNativeDriver: false }
-                ),
-                onPanResponderRelease: (event, gestureState) => {
-                  if (gestureState.moveY > 300) {
-                    // Ensure a copy of the tile is added
-                    onDropRiskTile({ ...tile, id: Date.now() }); 
-                    setIsRiskTilesModel(false); 
-                  } else {
-                    Animated.spring(pan, {
-                      toValue: { x: 0, y: 0 },
-                      useNativeDriver: false,
-                    }).start();
-                  }
+                onPanResponderGrant: () => {
+                  onDragStart(tile);
                 },
               });
   

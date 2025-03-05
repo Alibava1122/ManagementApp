@@ -11,6 +11,7 @@ import {
   Vibration,
   FlatList,
   Touchable,
+  PanResponder,
 } from "react-native";
 import TilesModal from "../../components/TilesModal";
 import ProfileModal from "../../components/Profilemodal";
@@ -34,6 +35,8 @@ const MainScreen = () => {
   const [isTilesModalVisible, setIsTilesModalVisible] = useState(false);
   const [isAnalyticsTilesModel, setIsAnalyticsTilesModel] = useState(false);
   const [isRiskTilesModel, setIsRiskTilesModel] = useState(false);
+  const [draggedTile, setDraggedTile] = useState(null);
+  const [dragPosition] = useState(new Animated.ValueXY());
 
   const tilesNames = [
     "Portfolio Tiles",
@@ -174,6 +177,39 @@ const MainScreen = () => {
     });
   };
 
+  // Add this new function to handle drag start
+  const handleDragStart = (tile, tileType) => {
+    setDraggedTile({ ...tile, type: tileType });
+    setIsModalVisible(false);
+    setIsModelNames(false);
+    setIsAnalyticsTilesModel(false);
+    setIsRiskTilesModel(false);
+  };
+
+  // Add this function to handle drag end
+  const handleDragEnd = (event, gestureState) => {
+    if (!draggedTile) return;
+
+    // Determine where to add the tile based on draggedTile.type
+    switch (draggedTile.type) {
+      case 'main':
+        handleDropTile(draggedTile);
+        break;
+      case 'focused':
+        handleDropFocusedSecondTile(draggedTile);
+        break;
+      case 'analytics':
+        handleDropAnalyticsTile(draggedTile);
+        break;
+      case 'risk':
+        handleDropRiskTile(draggedTile);
+        break;
+    }
+
+    setDraggedTile(null);
+    dragPosition.setValue({ x: 0, y: 0 });
+  };
+
   // Animation Function on Long press
 
   return (
@@ -307,6 +343,7 @@ const MainScreen = () => {
         isTilesModalVisible={isTilesModalVisible}
         setIsTilesModalVisible={setIsTilesModalVisible}
         onDropTile={handleDropTile}
+        onDragStart={(tile) => handleDragStart(tile, 'main')}
       />
       <ProfileModal
         isProfileModalVisible={isProfileModalVisible}
@@ -316,19 +353,47 @@ const MainScreen = () => {
         isNamesModel={isNamesModel}
         setIsModelNames={setIsModelNames}
         DropingFocusedSecondModelTile={handleDropFocusedSecondTile}
+        onDragStart={(tile) => handleDragStart(tile, 'focused')}
       />
 
       <AnalyticsTilesModal
         isAnalyticsTilesModel={isAnalyticsTilesModel}
         setIsAnalyticsTilesModel={setIsAnalyticsTilesModel}
         onDropAnalyticsTile={handleDropAnalyticsTile}
+        onDragStart={(tile) => handleDragStart(tile, 'analytics')}
       />
 
       <RiskTilesModal
         isRiskTilesModel={isRiskTilesModel}
         setIsRiskTilesModel={setIsRiskTilesModel}
         onDropRiskTile={handleDropRiskTile}
+        onDragStart={(tile) => handleDragStart(tile, 'risk')}
       />
+
+      {draggedTile && (
+        <Animated.View
+          style={[
+            styles.draggedTile,
+            {
+              transform: dragPosition.getTranslateTransform(),
+              backgroundColor: draggedTile.colorCode,
+            },
+          ]}
+          {...PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onPanResponderMove: Animated.event(
+              [null, { dx: dragPosition.x, dy: dragPosition.y }],
+              { useNativeDriver: false }
+            ),
+            onPanResponderRelease: handleDragEnd,
+          }).panHandlers}
+        >
+          {/* Render tile content based on draggedTile type */}
+          {draggedTile.image && (
+            <Image source={draggedTile.image} style={styles.draggedTileImage} />
+          )}
+        </Animated.View>
+      )}
     </>
   );
 };
@@ -510,6 +575,22 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 100,
+  },
+
+  draggedTile: {
+    position: 'absolute',
+    width: 120,
+    height: 120,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,
+    zIndex: 1000,
+  },
+  draggedTileImage: {
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
   },
 });
 
