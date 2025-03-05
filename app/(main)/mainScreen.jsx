@@ -37,6 +37,7 @@ const MainScreen = () => {
   const [isRiskTilesModel, setIsRiskTilesModel] = useState(false);
   const [draggedTile, setDraggedTile] = useState(null);
   const [dragPosition] = useState(new Animated.ValueXY());
+  const [draggedLocation, setDraggedLocation] = useState({ x: 0, y: 0 });
 
   const tilesNames = [
     "Portfolio Tiles",
@@ -182,10 +183,10 @@ const MainScreen = () => {
     setDraggedTile({ 
       ...tile, 
       type: tileType,
-      // Add initial position where the tile was grabbed
-      initialX: 0,
-      initialY: 0
     });
+    // Reset drag position when starting new drag
+    dragPosition.setValue({ x: 0, y: 0 });
+    setDraggedLocation({ x: 0, y: 0 });
     // Close all modals when drag starts
     setIsModalVisible(false);
     setIsModelNames(false);
@@ -194,24 +195,31 @@ const MainScreen = () => {
     setIsRiskTilesModel(false);
   };
 
-  // Update the draggedTile render code
+  // Add this after your other JSX, but before the final closing tag
   {draggedTile && (
     <Animated.View
       style={[
         styles.draggedTile,
         {
           position: 'absolute',
-          left: dragPosition.x,
-          top: dragPosition.y,
+          left: dragPosition.x._value + draggedLocation.x,
+          top: dragPosition.y._value + draggedLocation.y,
           backgroundColor: draggedTile.colorCode,
-          width: 300, // Match your tile width
-          height: 170, // Match your tile height
-          zIndex: 1000,
+          width: width * 0.8,
+          height: 170,
+          zIndex: 999,
         },
       ]}
       {...PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
+        onPanResponderGrant: () => {
+          setDraggedLocation({
+            x: dragPosition.x._value + draggedLocation.x,
+            y: dragPosition.y._value + draggedLocation.y,
+          });
+          dragPosition.setValue({ x: 0, y: 0 });
+        },
         onPanResponderMove: Animated.event(
           [null, { dx: dragPosition.x, dy: dragPosition.y }],
           { useNativeDriver: false }
@@ -219,15 +227,17 @@ const MainScreen = () => {
         onPanResponderRelease: handleDragEnd,
       }).panHandlers}
     >
-      <View style={styles.imageContainerText}>
-        <View>
-          <Text style={styles.headerText}>{draggedTile.title}</Text>
-          <Text style={styles.headerText}>{draggedTile.title2}</Text>
-          <Text style={styles.headerTextAmount}>{draggedTile.Amount}</Text>
+      <View style={styles.tileContainer}>
+        <View style={styles.imageContainerText}>
+          <View>
+            <Text style={styles.headerText}>{draggedTile.title}</Text>
+            <Text style={styles.headerText}>{draggedTile.title2}</Text>
+            <Text style={styles.headerTextAmount}>{draggedTile.Amount}</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.imageContainer}>
-        <Image source={draggedTile.image} style={styles.image} resizeMode="contain" />
+        <View style={styles.imageContainer}>
+          <Image source={draggedTile.image} style={styles.image} resizeMode="contain" />
+        </View>
       </View>
     </Animated.View>
   )}
@@ -600,41 +610,49 @@ const styles = StyleSheet.create({
 
   draggedTile: {
     position: 'absolute',
-    width: 120,
-    height: 120,
+    backgroundColor: 'white',
     borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
     elevation: 5,
-    zIndex: 1000,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  draggedTileImage: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
-  },
-
-  imageContainerText: {
+  tileContainer: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
+    padding: 20,
+  },
+  imageContainerText: {
+    width: '50%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerText: {
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: 'Merriweather-Bold',
     color: 'black',
   },
   headerTextAmount: {
-    fontSize: 14,
+    fontSize: 18,
     fontFamily: 'Merriweather-Bold',
     color: 'black',
+    marginTop: 7,
   },
   imageContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-    overflow: 'hidden',
+    width: '50%',
+    height: 110,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    width: 90,
+    height: 90,
+    borderRadius: 20,
   },
 });
 
