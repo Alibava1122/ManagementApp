@@ -37,7 +37,7 @@ const MainScreen = () => {
   const [isRiskTilesModel, setIsRiskTilesModel] = useState(false);
   const [draggedTile, setDraggedTile] = useState(null);
   const [dragPosition] = useState(new Animated.ValueXY());
-  const [draggedLocation, setDraggedLocation] = useState({ x: 0, y: 0 });
+  const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
 
   const tilesNames = [
     "Portfolio Tiles",
@@ -179,15 +179,16 @@ const MainScreen = () => {
   };
 
   // Update the handleDragStart function
-  const handleDragStart = (tile, tileType) => {
+  const handleDragStart = (tile, position) => {
     setDraggedTile({ 
       ...tile, 
       type: tileType,
     });
-    // Reset drag position when starting new drag
-    dragPosition.setValue({ x: 0, y: 0 });
-    setDraggedLocation({ x: 0, y: 0 });
-    // Close all modals when drag starts
+    
+    // Set the initial position where the tile was grabbed
+    setInitialPosition(position);
+    
+    // Close all modals
     setIsModalVisible(false);
     setIsModelNames(false);
     setIsTilesModalVisible(false);
@@ -202,8 +203,8 @@ const MainScreen = () => {
         styles.draggedTile,
         {
           position: 'absolute',
-          left: dragPosition.x._value + draggedLocation.x,
-          top: dragPosition.y._value + draggedLocation.y,
+          left: initialPosition.x + dragPosition.x._value,
+          top: initialPosition.y + dragPosition.y._value,
           backgroundColor: draggedTile.colorCode,
           width: width * 0.8,
           height: 170,
@@ -213,13 +214,6 @@ const MainScreen = () => {
       {...PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
-        onPanResponderGrant: () => {
-          setDraggedLocation({
-            x: dragPosition.x._value + draggedLocation.x,
-            y: dragPosition.y._value + draggedLocation.y,
-          });
-          dragPosition.setValue({ x: 0, y: 0 });
-        },
         onPanResponderMove: Animated.event(
           [null, { dx: dragPosition.x, dy: dragPosition.y }],
           { useNativeDriver: false }
