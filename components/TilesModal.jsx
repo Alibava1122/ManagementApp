@@ -29,29 +29,24 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, o
       useNativeDriver: true,
     }).start();
   }, [isTilesModalVisible]);
-  useEffect(() => {
-    if (isTilesModalVisible) {
-      Object.values(panRefs.current).forEach((pan) => {
-        pan.setValue({ x: 0, y: 0 });
-      });
-    }
-  }, [isTilesModalVisible]);
 
   const createPanResponder = (tile) => PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
 
-    onPanResponderGrant: (e, gesture) => {
-      // Close modal immediately when starting to drag
-      setIsTilesModalVisible(false);
-      
-      // Call onDragStart with the tile
+    onPanResponderGrant: () => {
+      // First trigger onDragStart to create the draggable tile
       onDragStart(tile);
+      // Then close the modal
+      setTimeout(() => {
+        setIsTilesModalVisible(false);
+      }, 100);
     },
 
-    onPanResponderMove: () => {
-      // We don't need to handle move in the modal
-    },
+    onPanResponderMove: Animated.event(
+      [null, { dx: panRefs.current[tile.id].x, dy: panRefs.current[tile.id].y }],
+      { useNativeDriver: false }
+    ),
 
     onPanResponderRelease: (e, gesture) => {
       if (gesture.moveY > 300) {
@@ -59,6 +54,16 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, o
       }
     },
   });
+
+  useEffect(() => {
+    if (isTilesModalVisible) {
+      availableTiles.forEach(tile => {
+        if (!panRefs.current[tile.id]) {
+          panRefs.current[tile.id] = new Animated.ValueXY();
+        }
+      });
+    }
+  }, [isTilesModalVisible]);
 
   return (
     isTilesModalVisible && (
@@ -70,7 +75,13 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, o
               {...createPanResponder(tile).panHandlers}
               style={[
                 styles.tileContainer,
-                {backgroundColor: tile.colorCode}
+                {backgroundColor: tile.colorCode},
+                {
+                  transform: [
+                    {translateX: panRefs.current[tile.id]?.x || 0},
+                    {translateY: panRefs.current[tile.id]?.y || 0}
+                  ]
+                }
               ]}
             >
               <View style={styles.imageContainerText}>
