@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 const { width } = Dimensions.get("window");
 
-const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile }) => {
+const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile, onDragStart }) => {
   const slideAnim = useRef(new Animated.Value(-width * 0.6)).current;
   const panRefs = useRef({});
  
@@ -47,50 +47,41 @@ const TilesModal = ({ isTilesModalVisible, setIsTilesModalVisible, onDropTile })
             }
             const pan = panRefs.current[tile.id];
 
-          const panResponder = PanResponder.create({
-  onStartShouldSetPanResponder: () => true,
+            const panResponder = PanResponder.create({
+              onStartShouldSetPanResponder: () => true,
+              onMoveShouldSetPanResponder: () => true,
 
-  onPanResponderGrant: () => {
-    setIsTilesModalVisible(false); // Close modal when user starts holding the tile
-    pan.setOffset({ x: pan.x._value, y: pan.y._value });
-    pan.setValue({ x: 0, y: 0 });
-  },
+              onPanResponderGrant: () => {
+                onDragStart(tile);
+                setIsTilesModalVisible(false);
+              },
 
-  onPanResponderMove: Animated.event(
-    [null, { dx: pan.x, dy: pan.y }],
-    { useNativeDriver: false }
-  ),
+              onPanResponderMove: (e, gesture) => {
+                // Optional: Add any move handling if needed
+              },
 
-  onPanResponderRelease: (event, gestureState) => {
-    pan.flattenOffset();
-
-    if (gestureState.moveY > 300) {
-      onDropTile({ ...tile, id: Date.now() });
-    } else {
-      Animated.spring(pan, {
-        toValue: { x: 0, y: 0 },
-        useNativeDriver: false,
-      }).start();
-    }
-  },
-});
-
+              onPanResponderRelease: (e, gesture) => {
+                if (gesture.moveY > 300) {
+                  onDropTile({ ...tile, id: Date.now() });
+                }
+              },
+            });
 
             return (
               <Animated.View
                 key={tile.id}
                 {...panResponder.panHandlers}
                 style={[
-                  styles.tileContainer, {backgroundColor:tile.colorCode},
-                  { transform: [{ translateX: pan.x }, { translateY: pan.y }] },
+                  styles.tileContainer,
+                  {backgroundColor: tile.colorCode},
                 ]}
               >
                 <View style={styles.imageContainerText}>
-                <View>
-                  <Text style={styles.headerText}>{tile.title}</Text>
-                  <Text style={styles.headerText}>{tile.title2}</Text>
-                  <Text style={styles.headerTextAmount}>{tile.Amount}</Text>
-                </View>
+                  <View>
+                    <Text style={styles.headerText}>{tile.title}</Text>
+                    <Text style={styles.headerText}>{tile.title2}</Text>
+                    <Text style={styles.headerTextAmount}>{tile.Amount}</Text>
+                  </View>
                 </View>
                 <View style={styles.imageContainer}>
                   <Image source={tile.image} style={styles.image} resizeMode="contain" />
