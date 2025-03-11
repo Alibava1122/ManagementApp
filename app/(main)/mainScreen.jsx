@@ -123,30 +123,25 @@ const createModalPanResponder = (tileId) => {
       setInitialPosition(initialPos);
       dragPosition.setValue(initialPos);
       panRefs[tileId - 1].setValue({ x: 0, y: 0 });
+
+      // **Close modal as soon as dragging starts**
+      setIsTilesModalVisible(false);
     },
     onPanResponderMove: (_, gesture) => {
       dragPosition.setValue({
         x: initialPosition.x + gesture.dx,
         y: initialPosition.y + gesture.dy,
       });
-
-      if (Math.abs(gesture.dy) > 100 || Math.abs(gesture.dx) > 100) {
-        // Close the modal only AFTER release to avoid stopping drag mid-way
-        setTimeout(() => {
-          if (!isDragging) {
-            setIsTilesModalVisible(false);
-          }
-        }, 50);
-      }
     },
     onPanResponderRelease: () => {
       dragPosition.flattenOffset();
       setTimeout(() => {
         setIsDragging(false);
-      }, 100); // Small delay to prevent abrupt stopping
+      }, 100);
     },
   });
 };
+
 
 
   // Separate pan responder for dragging after modal closes
