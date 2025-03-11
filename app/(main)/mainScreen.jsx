@@ -124,8 +124,10 @@ const createModalPanResponder = (tileId) => {
       dragPosition.setValue(initialPos);
       panRefs[tileId - 1].setValue({ x: 0, y: 0 });
 
-      // **Close modal as soon as dragging starts**
-      setIsTilesModalVisible(false);
+      // **Close modal after a short delay to prevent disruption**
+      setTimeout(() => {
+        setIsTilesModalVisible(false);
+      }, 10); // Small delay ensures drag remains smooth
     },
     onPanResponderMove: (_, gesture) => {
       dragPosition.setValue({
@@ -141,6 +143,7 @@ const createModalPanResponder = (tileId) => {
     },
   });
 };
+
 
 
 
