@@ -8,13 +8,14 @@ const RootLayout = () => {
   const [isLogin, setIsLogin] = useState(false);
 
   return (
-  
+  <GestureHandlerRootView style={{flex:1}} >
     <AssetProvider>
       <>
         <Stack screenOptions={{ headerShown: false }} />
         {isLogin ? <Redirect href={"/(tabs)"} /> : <Redirect href={"./(auth)"} />}
       </>
     </AssetProvider>
+    </GestureHandlerRootView>
   
   );
 };

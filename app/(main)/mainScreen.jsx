@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -7,22 +7,15 @@ import {
   ScrollView,
   Image,
   Animated,
-  Dimensions,
   Vibration,
   FlatList,
   Touchable,
+  Dimensions,
+  PanResponder,
 } from "react-native";
 import TilesModal from "../../components/TilesModal";
-import ProfileModal from "../../components/Profilemodal";
 import { AntDesign, Feather } from "@expo/vector-icons";
 
-import AnalyticsTilesModal from "../../components/AnalyticsTilesModal";
-import FocusedFirstModel from "../../components/FocusedFirstModel";
-import RiskTilesModal from "../../components/RiskTilesModal";
-import { router } from "expo-router";
-import DropedFocusedCard from "../../components/DropedFocusedCard";
-import DroppedAnalyticsCard from "../../components/DroppedAnalyticsCard";
-import DroppedRiskCard from "../../components/DroppedRiskCard";
 import DroppedMainTilesCard from "../../components/DroppedMainTilesCard";
 
 const { width } = Dimensions.get("window");
@@ -32,8 +25,6 @@ const MainScreen = () => {
   const [isNamesModel, setIsModelNames] = useState(false);
   const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
   const [isTilesModalVisible, setIsTilesModalVisible] = useState(false);
-  const [isAnalyticsTilesModel, setIsAnalyticsTilesModel] = useState(false);
-  const [isRiskTilesModel, setIsRiskTilesModel] = useState(false);
 
   const tilesNames = [
     "Portfolio Tiles",
@@ -62,32 +53,6 @@ const MainScreen = () => {
 
   // dropTiles States
 
-  const [droppedAnalyticsTiles, setAnalyticsDroppedTiles] = useState([
-    {
-      id: 1,
-      title: "Analtics",
-      colorCode: "#d1fbfd",
-      image: require("../../assets/images/analyticsGraph.webp"),
-      image2: require("../../assets/images/calender.png"),
-      scaleAnim: new Animated.Value(1),
-      shakeAnim: new Animated.Value(0),
-      showDelete: false,
-      isStatic: true,
-    },
-  ]);
-
-  const [droppedRiskTiles, setDroppedRiskTiles] = useState([
-    {
-      id: 2,
-      title: "Risk ",
-      colorCode: "#d1fbfd",
-      image: require("../../assets/images/risk.png"),
-      scaleAnim: new Animated.Value(1),
-      shakeAnim: new Animated.Value(0),
-      showDelete: false,
-      isStatic: true,
-    },
-  ]);
   const [droppedTiles, setDroppedTiles] = useState([
     {
       id: 2,
@@ -104,75 +69,104 @@ const MainScreen = () => {
     },
   ]);
 
-  const [DroppedFocusedSecond, setDroppedFocusedSecond] = useState([
+  const [draggedTile, setDraggedTile] = useState(null);
+  const panRefs = useRef(
+    new Array(3).fill(0).map(() => new Animated.ValueXY())
+  ).current;
+
+  const [availableTiles] = useState([
     {
       id: 1,
-      title: "One Asset",
-      title2: "Management",
-      colorCode: "#cfe2fe",
-      image: require("../../assets/images/cryptograph.png"),
-      scaleAnim: new Animated.Value(1),
-      shakeAnim: new Animated.Value(0),
-      showDelete: false,
-      isStatic: true,
+      title: "Total",
+      title2: "Portfolio",
+      colorCode: "#f3d9fd",
+      Amount: "£1000",
+      image: require("../../assets/images/graph2.png"),
+    },
+    {
+      id: 2,
+      title: "Custom",
+      title2: "Portfolio",
+      colorCode: "#fcfbca",
+      Amount: "£2000",
+      image: require("../../assets/images/circleG.png"),
+    },
+    {
+      id: 3,
+      title: "Total",
+      title2: "Portfolio",
+      colorCode: "#f3d9fd",
+      Amount: "£3000",
+      image: require("../../assets/images/salesGraph.webp"),
     },
   ]);
 
-  const handleDropTile = (tile) => {
-    setDroppedTiles((prevTiles) => [
-      ...prevTiles,
-      {
-        ...tile,
-        scaleAnim: new Animated.Value(1),
-        shakeAnim: new Animated.Value(0),
-        showDelete: false,
+  const dragPosition = useRef(new Animated.ValueXY()).current;
+  const [isDragging, setIsDragging] = useState(false);
+  const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
+
+  console.log("dragged position ----->", dragPosition.x, dragPosition.y);
+
+  // Create separate pan responder for modal tiles
+  const createModalPanResponder = (tileId) => {
+    return PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        const tile = availableTiles.find((t) => t.id === tileId);
+        setDraggedTile(tile);
+        setIsDragging(true);
+
+        const initialPos = {
+          x: 45,
+          y: 41 + (tileId - 1) * 180,
+        };
+        setInitialPosition(initialPos);
+        dragPosition.setValue(initialPos);
+        panRefs[tileId - 1].setValue({ x: 0, y: 0 });
       },
-    ]);
-  };
+      onPanResponderMove: (_, gesture) => {
+        dragPosition.setValue({
+          x: initialPosition.x + gesture.dx,
+          y: initialPosition.y + gesture.dy,
+          
+        });
 
-  const handleDropAnalyticsTile = (tile) => {
-    setAnalyticsDroppedTiles((prevTiles) => {
-      if (prevTiles.length >= 5) return prevTiles;
-      return [
-        ...prevTiles,
-        {
-          ...tile,
-          scaleAnim: new Animated.Value(1),
-          shakeAnim: new Animated.Value(0),
-          showDelete: false,
-        },
-      ];
-    });
-  };
-  const handleDropRiskTile = (tile) => {
-    setDroppedRiskTiles((prevTiles) => {
-      if (prevTiles.length >= 5) return prevTiles;
-      return [
-        ...prevTiles,
-        {
-          ...tile,
-          scaleAnim: new Animated.Value(1),
-          shakeAnim: new Animated.Value(0),
-          showDelete: false,
-        },
-      ];
+        if (Math.abs(gesture.dy) > 100 || Math.abs(gesture.dx) > 100) {
+          // Close the modal with a slight delay to ensure dragging continues
+          setTimeout(() => {
+            setIsTilesModalVisible(false);
+          }, 50);
+        }
+      },
+      onPanResponderRelease: () => {
+        // Keep dragging active even after the modal closes
+        dragPosition.flattenOffset();
+      },
     });
   };
 
-  const handleDropFocusedSecondTile = (tile) => {
-    setDroppedFocusedSecond((prevTiles) => {
-      if (prevTiles.length >= 1) return prevTiles;
-      return [
-        ...prevTiles,
-        {
-          ...tile,
-          scaleAnim: new Animated.Value(1),
-          shakeAnim: new Animated.Value(0),
-          showDelete: false,
-        },
-      ];
-    });
-  };
+  // Separate pan responder for dragging after modal closes
+  const draggedTilePanResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        dragPosition.setOffset({
+          x: dragPosition.x._value,
+          y: dragPosition.y._value,
+        });
+        dragPosition.setValue({ x: 0, y: 0 });
+      },
+      onPanResponderMove: Animated.event(
+        [null, { dx: dragPosition.x, dy: dragPosition.y }],
+        { useNativeDriver: false }
+      ),
+      onPanResponderRelease: () => {
+        setIsDragging(false);
+        dragPosition.flattenOffset();
+        setDraggedTile(null);
+      },
+    })
+  ).current;
 
   // Animation Function on Long press
 
@@ -186,7 +180,7 @@ const MainScreen = () => {
         >
           <Image
             source={require("../../assets/images/plusIcon.png")}
-            style={styles.image}
+            style={styles.imagePlus}
             resizeMode="contain"
           />
         </TouchableOpacity>
@@ -218,38 +212,12 @@ const MainScreen = () => {
         <ScrollView style={styles.container}>
           {/* first flatList    */}
 
-         <View >
-         <DroppedMainTilesCard
-            droppedTiles={droppedTiles}
-            setDroppedTiles={setDroppedTiles}
-          />
-         </View>
-
-         <View >
-         {DroppedFocusedSecond.length == 0 ? null : (
-            <>
-              <DropedFocusedCard
-                DroppedFocusedSecond={DroppedFocusedSecond}
-                setDroppedFocusedSecond={setDroppedFocusedSecond}
-
-              />
-            </>
-          )}
-         </View>
-
-         <View >
-         <DroppedAnalyticsCard
-            droppedAnalyticsTiles={droppedAnalyticsTiles}
-            setAnalyticsDroppedTiles={setAnalyticsDroppedTiles}
-          />
-         </View>
-
-         <View >
-         <DroppedRiskCard
-            droppedRiskTiles={droppedRiskTiles}
-            setDroppedRiskTiles={setDroppedRiskTiles}
-          />
-         </View>
+          <View>
+            <DroppedMainTilesCard
+              droppedTiles={droppedTiles}
+              setDroppedTiles={setDroppedTiles}
+            />
+          </View>
 
           <View style={{ marginBottom: 90 }}></View>
 
@@ -303,32 +271,90 @@ const MainScreen = () => {
         </Animated.View>
       )}
 
-      <TilesModal
-        isTilesModalVisible={isTilesModalVisible}
-        setIsTilesModalVisible={setIsTilesModalVisible}
-        onDropTile={handleDropTile}
-      />
-      <ProfileModal
-        isProfileModalVisible={isProfileModalVisible}
-        setIsProfileModalVisible={setIsProfileModalVisible}
-      />
-      <FocusedFirstModel
-        isNamesModel={isNamesModel}
-        setIsModelNames={setIsModelNames}
-        DropingFocusedSecondModelTile={handleDropFocusedSecondTile}
-      />
+      <>
+        {isTilesModalVisible && (
+          <Animated.View style={[styles.modalContainer]}>
+            <View style={styles.modalContent}>
+              {availableTiles.map((tile, index) => (
+                <Animated.View
+                  key={tile.id}
+                  style={[
+                    styles.tileContainer,
+                    { backgroundColor: tile.colorCode },
+                    {
+                      transform: panRefs[index].getTranslateTransform(),
+                    },
+                  ]}
+                  {...createModalPanResponder(tile.id).panHandlers}
+                >
+                  <View style={styles.imageContainerText}>
+                    <View>
+                      <Text style={styles.headerText}>{tile.title}</Text>
+                      <Text style={styles.headerText}>{tile.title2}</Text>
+                      <Text style={styles.headerTextAmount}>{tile.Amount}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.imageContainer}>
+                    <Image
+                      source={tile.image}
+                      style={styles.image}
+                      resizeMode="contain"
+                    />
+                  </View>
+                </Animated.View>
+              ))}
 
-      <AnalyticsTilesModal
-        isAnalyticsTilesModel={isAnalyticsTilesModel}
-        setIsAnalyticsTilesModel={setIsAnalyticsTilesModel}
-        onDropAnalyticsTile={handleDropAnalyticsTile}
-      />
+              <TouchableOpacity
+                onPress={() => setIsTilesModalVisible(false)}
+                style={styles.closeButton}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        )}
+      </>
 
-      <RiskTilesModal
-        isRiskTilesModel={isRiskTilesModel}
-        setIsRiskTilesModel={setIsRiskTilesModel}
-        onDropRiskTile={handleDropRiskTile}
-      />
+      {/* Update the dragged tile overlay */}
+      {draggedTile && (
+        <Animated.View
+          style={[
+            styles.draggedTile,
+            {
+              transform: dragPosition.getTranslateTransform(),
+              position: "absolute",
+              width: width * 0.8,
+              left: 0,
+              top: 0,
+            },
+          ]}
+          {...draggedTilePanResponder.panHandlers}
+        >
+          <View
+            style={[
+              styles.tileContainer,
+              { backgroundColor: draggedTile.colorCode },
+            ]}
+          >
+            <View style={styles.imageContainerText}>
+              <View>
+                <Text style={styles.headerText}>{draggedTile.title}</Text>
+                <Text style={styles.headerText}>{draggedTile.title2}</Text>
+                <Text style={styles.headerTextAmount}>
+                  {draggedTile.Amount}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.imageContainer}>
+              <Image
+                source={draggedTile.image}
+                style={styles.image}
+                resizeMode="contain"
+              />
+            </View>
+          </View>
+        </Animated.View>
+      )}
     </>
   );
 };
@@ -346,7 +372,7 @@ const styles = StyleSheet.create({
 
     alignItems: "center",
   },
-  image: {
+  imagePlus: {
     width: 40,
     height: 40,
   },
@@ -510,6 +536,120 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 100,
+  },
+
+  modalContainer: {
+    position: "absolute",
+    top: 41,
+    left: 45,
+    width: width * 0.8,
+    // height: "70%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    elevation: 5,
+    zIndex: 100,
+    shadowColor: "#000",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+  modalContent: {
+    padding: 20,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 15,
+    color: "black",
+  },
+  buttonContainer: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  modalButton: {
+    backgroundColor: "#f2f2f2",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginHorizontal: 5,
+    marginBottom: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "black",
+    fontFamily: "Merriweather-Bold",
+  },
+  closeButton: {
+    backgroundColor: "red",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  closeButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontFamily: "Merriweather-Bold",
+  },
+  tileContainer: {
+    height: 170,
+    width: "100%",
+    borderRadius: 15,
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "grey",
+    backgroundColor: "#eed5fa",
+  },
+
+  headerText: {
+    fontSize: 18,
+    fontFamily: "Merriweather-Bold",
+    color: "black",
+  },
+  headerTextAmount: {
+    fontSize: 18,
+    fontFamily: "Merriweather-Bold",
+    color: "black",
+    marginTop: 7,
+  },
+  imageContainer: {
+    width: "50%",
+    height: 110,
+    backgroundColor: "white",
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  image: {
+    width: 90,
+    height: 90,
+    borderRadius: 20,
+  },
+  imageContainerText: {
+    width: "50%",
+    height: 110,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  draggedTile: {
+    position: "absolute",
+    zIndex: 1000,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
   },
 });
 
