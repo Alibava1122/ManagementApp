@@ -31,7 +31,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen 
-        name="settings"
+        name="community"
         options={{ 
           tabBarShowLabel: false,
           tabBarIcon: ({ color, size }) => (

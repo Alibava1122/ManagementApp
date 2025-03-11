@@ -18,6 +18,7 @@ const _layout = () => {
     <Stack.Screen name='crypto-details' options={{ title:'Crypto Deatils' , headerShown:true}}/>
     <Stack.Screen name='stocks-details' options={{title:'Stocks Deatils' ,headerShown:true}}/>
     <Stack.Screen name='realEstate-Detail' options={{title:'Real-Estate Deatils' ,headerShown:true}}/>
+    <Stack.Screen name='postDetailsScreen' options={{title:'Deatils' ,headerShown:true}}/>
     
    
 
