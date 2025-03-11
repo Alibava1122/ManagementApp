@@ -108,65 +108,74 @@ const MainScreen = () => {
   console.log("dragged position ----->", dragPosition.x, dragPosition.y);
 
   // Create separate pan responder for modal tiles
-  const createModalPanResponder = (tileId) => {
-    return PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        const tile = availableTiles.find((t) => t.id === tileId);
-        setDraggedTile(tile);
-        setIsDragging(true);
+const createModalPanResponder = (tileId) => {
+  return PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderGrant: () => {
+      const tile = availableTiles.find((t) => t.id === tileId);
+      setDraggedTile(tile);
+      setIsDragging(true);
 
-        const initialPos = {
-          x: 45,
-          y: 41 + (tileId - 1) * 180,
-        };
-        setInitialPosition(initialPos);
-        dragPosition.setValue(initialPos);
-        panRefs[tileId - 1].setValue({ x: 0, y: 0 });
-      },
-      onPanResponderMove: (_, gesture) => {
-        dragPosition.setValue({
-          x: initialPosition.x + gesture.dx,
-          y: initialPosition.y + gesture.dy,
-          
-        });
+      const initialPos = {
+        x: 45,
+        y: 41 + (tileId - 1) * 180,
+      };
+      setInitialPosition(initialPos);
+      dragPosition.setValue(initialPos);
+      panRefs[tileId - 1].setValue({ x: 0, y: 0 });
+    },
+    onPanResponderMove: (_, gesture) => {
+      dragPosition.setValue({
+        x: initialPosition.x + gesture.dx,
+        y: initialPosition.y + gesture.dy,
+      });
 
-        if (Math.abs(gesture.dy) > 100 || Math.abs(gesture.dx) > 100) {
-          // Close the modal with a slight delay to ensure dragging continues
-          setTimeout(() => {
+      if (Math.abs(gesture.dy) > 100 || Math.abs(gesture.dx) > 100) {
+        // Close the modal only AFTER release to avoid stopping drag mid-way
+        setTimeout(() => {
+          if (!isDragging) {
             setIsTilesModalVisible(false);
-          }, 50);
-        }
-      },
-      onPanResponderRelease: () => {
-        // Keep dragging active even after the modal closes
-        dragPosition.flattenOffset();
-      },
-    });
-  };
+          }
+        }, 50);
+      }
+    },
+    onPanResponderRelease: () => {
+      dragPosition.flattenOffset();
+      setTimeout(() => {
+        setIsDragging(false);
+      }, 100); // Small delay to prevent abrupt stopping
+    },
+  });
+};
+
 
   // Separate pan responder for dragging after modal closes
   const draggedTilePanResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        dragPosition.setOffset({
-          x: dragPosition.x._value,
-          y: dragPosition.y._value,
-        });
-        dragPosition.setValue({ x: 0, y: 0 });
-      },
-      onPanResponderMove: Animated.event(
-        [null, { dx: dragPosition.x, dy: dragPosition.y }],
-        { useNativeDriver: false }
-      ),
-      onPanResponderRelease: () => {
-        setIsDragging(false);
-        dragPosition.flattenOffset();
+  PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderGrant: () => {
+      if (!draggedTile) return; // Prevent starting drag on click
+      
+      dragPosition.setOffset({
+        x: dragPosition.x._value,
+        y: dragPosition.y._value,
+      });
+      dragPosition.setValue({ x: 0, y: 0 });
+    },
+    onPanResponderMove: Animated.event(
+      [null, { dx: dragPosition.x, dy: dragPosition.y }],
+      { useNativeDriver: false }
+    ),
+    onPanResponderRelease: () => {
+      setIsDragging(false);
+      dragPosition.flattenOffset();
+      setTimeout(() => {
         setDraggedTile(null);
-      },
-    })
-  ).current;
+      }, 100); // Ensure smooth stopping
+    },
+  })
+).current;
+
 
   // Animation Function on Long press
 
