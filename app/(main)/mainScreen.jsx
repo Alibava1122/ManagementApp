@@ -17,6 +17,7 @@ import TilesModal from "../../components/TilesModal";
 import { AntDesign, Feather } from "@expo/vector-icons";
 
 import DroppedMainTilesCard from "../../components/DroppedMainTilesCard";
+import DraggableTilesModal from '../../components/DraggableTilesModal';
 
 const { width } = Dimensions.get("window");
 
@@ -271,90 +272,16 @@ const MainScreen = () => {
         </Animated.View>
       )}
 
-      <>
-        {isTilesModalVisible && (
-          <Animated.View style={[styles.modalContainer]}>
-            <View style={styles.modalContent}>
-              {availableTiles.map((tile, index) => (
-                <Animated.View
-                  key={tile.id}
-                  style={[
-                    styles.tileContainer,
-                    { backgroundColor: tile.colorCode },
-                    {
-                      transform: panRefs[index].getTranslateTransform(),
-                    },
-                  ]}
-                  {...createModalPanResponder(tile.id).panHandlers}
-                >
-                  <View style={styles.imageContainerText}>
-                    <View>
-                      <Text style={styles.headerText}>{tile.title}</Text>
-                      <Text style={styles.headerText}>{tile.title2}</Text>
-                      <Text style={styles.headerTextAmount}>{tile.Amount}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.imageContainer}>
-                    <Image
-                      source={tile.image}
-                      style={styles.image}
-                      resizeMode="contain"
-                    />
-                  </View>
-                </Animated.View>
-              ))}
-
-              <TouchableOpacity
-                onPress={() => setIsTilesModalVisible(false)}
-                style={styles.closeButton}
-              >
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        )}
-      </>
-
-      {/* Update the dragged tile overlay */}
-      {draggedTile && (
-        <Animated.View
-          style={[
-            styles.draggedTile,
-            {
-              transform: dragPosition.getTranslateTransform(),
-              position: "absolute",
-              width: width * 0.8,
-              left: 0,
-              top: 0,
-            },
-          ]}
-          {...draggedTilePanResponder.panHandlers}
-        >
-          <View
-            style={[
-              styles.tileContainer,
-              { backgroundColor: draggedTile.colorCode },
-            ]}
-          >
-            <View style={styles.imageContainerText}>
-              <View>
-                <Text style={styles.headerText}>{draggedTile.title}</Text>
-                <Text style={styles.headerText}>{draggedTile.title2}</Text>
-                <Text style={styles.headerTextAmount}>
-                  {draggedTile.Amount}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.imageContainer}>
-              <Image
-                source={draggedTile.image}
-                style={styles.image}
-                resizeMode="contain"
-              />
-            </View>
-          </View>
-        </Animated.View>
-      )}
+      <DraggableTilesModal 
+        isTilesModalVisible={isTilesModalVisible}
+        setIsTilesModalVisible={setIsTilesModalVisible}
+        availableTiles={availableTiles}
+        panRefs={panRefs}
+        createModalPanResponder={createModalPanResponder}
+        draggedTile={draggedTile}
+        dragPosition={dragPosition}
+        draggedTilePanResponder={draggedTilePanResponder}
+      />
     </>
   );
 };
