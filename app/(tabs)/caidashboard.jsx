@@ -27,7 +27,7 @@ import DroppedMainTilesCard from "../../components/DroppedMainTilesCard";
 
 const { width } = Dimensions.get("window");
 
-const MainScreen = () => {
+const caidashboard = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isNamesModel, setIsModelNames] = useState(false);
   const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
@@ -77,45 +77,14 @@ const MainScreen = () => {
   ]);
 
   const [droppedRiskTiles, setDroppedRiskTiles] = useState([
-    {
-      id: 2,
-      title: "Risk ",
-      colorCode: "#d1fbfd",
-      image: require("../../assets/images/risk.png"),
-      scaleAnim: new Animated.Value(1),
-      shakeAnim: new Animated.Value(0),
-      showDelete: false,
-      isStatic: true,
-    },
+    
   ]);
   const [droppedTiles, setDroppedTiles] = useState([
-    {
-      id: 2,
-      title: "Custom",
-      title2: "Portfolio",
-      colorCode: "#fcfbca",
-      Amount: "£2000",
-      image: require("../../assets/images/circleG.png"),
-
-      scaleAnim: new Animated.Value(1),
-      shakeAnim: new Animated.Value(0),
-      showDelete: false,
-      isStatic: true,
-    },
+   
   ]);
 
   const [DroppedFocusedSecond, setDroppedFocusedSecond] = useState([
-    {
-      id: 1,
-      title: "One Asset",
-      title2: "Management",
-      colorCode: "#cfe2fe",
-      image: require("../../assets/images/cryptograph.png"),
-      scaleAnim: new Animated.Value(1),
-      shakeAnim: new Animated.Value(0),
-      showDelete: false,
-      isStatic: true,
-    },
+   
   ]);
 
   const handleDropTile = (tile) => {
@@ -210,13 +179,11 @@ const MainScreen = () => {
         </TouchableOpacity>
       </View>
       <>
-      <View  style={styles.floatingContainer}>
-        <TouchableOpacity onPress={()=>router.navigate("/chat")} style={styles.floatingContainer}>
+        <TouchableOpacity style={styles.floatingContainer}>
           <View style={styles.floatingText}>
             <Text style={styles.floatText}>ANDORSE AI</Text>
           </View>
         </TouchableOpacity>
-        </View>
         <ScrollView style={styles.container}>
           {/* first flatList    */}
 
@@ -347,6 +314,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
 
     alignItems: "center",
+    backgroundColor:'white'
   },
   image: {
     width: 40,
@@ -515,4 +483,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MainScreen;
+export default caidashboard;

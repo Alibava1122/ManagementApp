@@ -8,7 +8,7 @@ const _layout = () => {
     <Stack.Screen name='mainScreen'  options={{headerShown:false}}/>
     <Stack.Screen name='settingsScreen'  options={{title:"Settings",headerShown:true}}/>
     <Stack.Screen name='subscriptionScreen'  options={{title:"Payment & Subscription",headerShown:true}}/>
-    <Stack.Screen name='modalScreen'  options={{headerShown:false}}/>
+    {/* <Stack.Screen name='modalScreen'  options={{headerShown:false}}/> */}
     <Stack.Screen name='cryptoScreen' options={{headerShown:false}}/>
     <Stack.Screen name='stocksScreen' options={{headerShown:false}}/>
     <Stack.Screen name='cashScreen' options={{headerShown:false}}/>
@@ -19,6 +19,8 @@ const _layout = () => {
     <Stack.Screen name='stocks-details' options={{title:'Stocks Deatils' ,headerShown:true}}/>
     <Stack.Screen name='realEstate-Detail' options={{title:'Real-Estate Deatils' ,headerShown:true}}/>
     <Stack.Screen name='postDetailsScreen' options={{title:'Deatils' ,headerShown:true}}/>
+    <Stack.Screen name='communityPostsScreen' options={{title:'Posts' ,headerShown:false}}/>
+    <Stack.Screen name='chat' options={{title:'Posts' ,headerShown:false}}/>
     
    
 

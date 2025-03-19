@@ -21,11 +21,12 @@ export default function postDetailsScreen() {
     }
   };
 
+
   return (
     <ScrollView style={styles.container}>
         <View style={styles.imageContainer}>
                
-               <Image source={params.image} style={styles.postImage} resizeMode="cover" />
+               <Image source={ params.image} style={styles.postImage} resizeMode="cover" />
               </View>
       <Text style={styles.postTitle}>{params.title}</Text>
       <Text style={styles.postContent}>{params.content}</Text>

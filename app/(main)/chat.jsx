@@ -5,19 +5,24 @@ import {
   TouchableOpacity,
   View,
   FlatList,
+  Keyboard,
 } from "react-native";
-import React, { useState } from "react";
-import { AntDesign } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import HistoryModal from "../../components/HistoryModal";
+import { router } from "expo-router";
+
+import DropDowns from "../../components/DropDowns";
 
 const Chat = () => {
   const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]); 
+  const [messages, setMessages] = useState([]);
+
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      setMessages((prevMessages) => [...prevMessages, message]); 
+      setMessages((prevMessages) => [...prevMessages, message]);
       setMessage("");
     }
   };
@@ -30,8 +35,30 @@ const Chat = () => {
           <TouchableOpacity onPress={() => setIsHistoryModalVisible(true)}>
             <AntDesign name="menu-unfold" size={21} color="black" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Chat</Text>
+
+          <TouchableOpacity onPress={() => router.back()}>
+            <AntDesign name="arrowleft" size={24} color="black" />
+          </TouchableOpacity>
         </View>
+
+        <View style={styles.dropDownsContainer}>
+        <DropDowns   items={[
+            { label: "Creative", value: "Creative" },
+            { label: "Precise", value: "Precise" },
+          ]}/>
+        </View>
+        <View style={styles.dropDownsContainer}>
+        <DropDowns  items={[
+            { label: "Crypto", value: "Crypto" },
+            { label: "Assets", value: "Assets" },
+            { label: "Real Estate", value: "RealEstate" },
+          ]}/>
+        </View>
+
+        {/* 2nd dropdown */}
+
+       
+      
 
         {/* Messages */}
         <FlatList
@@ -58,7 +85,10 @@ const Chat = () => {
               placeholderTextColor="#B0B0B0"
             />
           </View>
-          <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
+          <TouchableOpacity
+            style={styles.sendButton}
+            onPress={handleSendMessage}
+          >
             <Text style={styles.sendText}>Send</Text>
           </TouchableOpacity>
         </View>
@@ -81,8 +111,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   subcontainer: {
-    flex: 1,
-    justifyContent: "space-between",
+    // backgroundColor:'black',
+    height: "100%",
   },
   header: {
     flexDirection: "row",
@@ -91,6 +121,10 @@ const styles = StyleSheet.create({
     padding: 17,
     backgroundColor: "white",
   },
+  headerIcons: {
+    flexDirection: "row",
+  },
+
   headerTitle: {
     fontSize: 20,
     fontWeight: "bold",
@@ -102,9 +136,9 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   messageSubContainer: {
-    alignSelf:'flex-end',
+    alignSelf: "flex-end",
     marginBottom: 5,
-    marginTop:4
+    marginTop: 4,
   },
   messageBox: {
     backgroundColor: "#3e8c89",
@@ -144,6 +178,16 @@ const styles = StyleSheet.create({
   sendText: {
     color: "white",
     fontSize: 16,
-    
   },
+
+  dropDownsContainer: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    marginTop:7,
+    marginBottom:7
+   
+  },
+ 
 });
