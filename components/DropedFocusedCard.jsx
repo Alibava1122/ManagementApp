@@ -90,7 +90,7 @@ const DropedFocusedCard = ({
   };
 
   return (
-    <View style={{marginTop:-1}}>
+    <View  style={{marginTop:-16}} >
       <FlatList
         data={DroppedFocusedSecond}
         contentContainerStyle={styles.listContainer}
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   listContainer: {
     justifyContent: "space-around",
     alignItems: "center",
-    padding: 10,
+    padding: 7, 
   },
   FocusedTileContainer: {
     width: "100%",
@@ -213,7 +213,8 @@ const styles = StyleSheet.create({
     borderColor: "grey",
     flexDirection: "row",
     justifyContent: "space-around",
-    position:'relative'
+    position:'relative',
+    // marginTop:15
   },
   deleteButton: {
     position: "absolute",

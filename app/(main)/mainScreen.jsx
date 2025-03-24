@@ -24,6 +24,7 @@ import DropedFocusedCard from "../../components/DropedFocusedCard";
 import DroppedAnalyticsCard from "../../components/DroppedAnalyticsCard";
 import DroppedRiskCard from "../../components/DroppedRiskCard";
 import DroppedMainTilesCard from "../../components/DroppedMainTilesCard";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const { width } = Dimensions.get("window");
 
@@ -217,7 +218,9 @@ const MainScreen = () => {
           </View>
         </TouchableOpacity>
         </View>
+        <GestureHandlerRootView>
         <ScrollView style={styles.container}>
+          
           {/* first flatList    */}
 
          <View >
@@ -256,7 +259,9 @@ const MainScreen = () => {
           <View style={{ marginBottom: 90 }}></View>
 
           {/* <DashboardDesign/> */}
+         
         </ScrollView>
+        </GestureHandlerRootView>
       </>
 
       {/* First Model  */}
@@ -516,3 +521,8 @@ const styles = StyleSheet.create({
 });
 
 export default MainScreen;
+
+
+
+
+

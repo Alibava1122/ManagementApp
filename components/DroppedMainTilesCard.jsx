@@ -86,18 +86,10 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
   };
 
   return (
-    <View style={styles.DropTiles}>
+    <View>
       <FlatList
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
         data={droppedTiles}
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: 10,
-        }}
+        contentContainerStyle={styles.listContainer}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <Animated.View
@@ -123,7 +115,6 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
               style={[
                 styles.tileContainer,
                 { backgroundColor: item.colorCode },
-                { marginLeft: droppedTiles.length > 1 ? 15 : 0 },
               ]}
               onPress={() => {
                 handlePressOutside(item);
@@ -207,24 +198,20 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
 export default DroppedMainTiles;
 
 const styles = StyleSheet.create({
-  DropTiles: {
-    width: "100%",
-    marginTop: 15,
-    borderRadius: 20,
+ 
+  listContainer: {
+    justifyContent: "space-around",
     alignItems: "center",
-    justifyContent: "center",
-    overflow: "visible",
-    // backgroundColor:'black'
+    padding: 19,
   },
   deleteButton: {
     position: "absolute",
-    top: -4,
+    top: 8,
     right: 0,
     zIndex: 1,
   },
   tileContainer: {
-    height: 170,
-    width: 335,
+    marginTop:10,
     borderRadius: 15,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -234,7 +221,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderWidth: 1,
     borderColor: "grey",
-    marginRight: 7,
+    // marginRight: 7,
     overflow: "visible",
   },
   textContainer: {

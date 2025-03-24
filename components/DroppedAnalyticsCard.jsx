@@ -90,7 +90,7 @@ const DroppedAnalyticsCard = ({
     setAnalyticsDroppedTiles([...droppedAnalyticsTiles]);
   };
   return (
-    <View style={{ marginTop: -14 }}>
+    <View style={{ marginTop: -11 }}>
       <FlatList
         data={droppedAnalyticsTiles}
         contentContainerStyle={{
