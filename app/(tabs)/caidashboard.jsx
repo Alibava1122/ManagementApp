@@ -24,6 +24,8 @@ import DropedFocusedCard from "../../components/DropedFocusedCard";
 import DroppedAnalyticsCard from "../../components/DroppedAnalyticsCard";
 import DroppedRiskCard from "../../components/DroppedRiskCard";
 import DroppedMainTilesCard from "../../components/DroppedMainTilesCard";
+import DraggableFlatList from "react-native-draggable-flatlist";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const { width } = Dimensions.get("window");
 
@@ -143,6 +145,37 @@ const caidashboard = () => {
     });
   };
 
+  const componentsData = [
+    {
+      id: '1',
+      title:'Profile Tiles',
+      component: DroppedMainTilesCard,
+      props: { droppedTiles, setDroppedTiles }
+    },
+    {
+      id: '2',
+      title:'Focused Tiles',
+      component: DropedFocusedCard,
+      props: { DroppedFocusedSecond, setDroppedFocusedSecond }
+    },
+    {
+      id: '3',
+      title:'Analytic Tiles',
+      component: DroppedAnalyticsCard,
+      props: { droppedAnalyticsTiles, setAnalyticsDroppedTiles }
+    },
+    {
+      id: '4',
+      title:'Risk Tiles',
+      component: DroppedRiskCard,
+      props: { droppedRiskTiles, setDroppedRiskTiles }
+    }
+  ];
+  useEffect(()=>{
+    setDraggedState(componentsData)
+  },[droppedTiles , DroppedFocusedSecond , droppedAnalyticsTiles , droppedRiskTiles])
+    const [draggedState , setDraggedState] = useState(componentsData);
+
   // Animation Function on Long press
 
   return (
@@ -184,10 +217,11 @@ const caidashboard = () => {
             <Text style={styles.floatText}>ANDORSE AI</Text>
           </View>
         </TouchableOpacity>
+        <GestureHandlerRootView>
         <ScrollView style={styles.container}>
           {/* first flatList    */}
 
-         <View >
+         {/* <View >
          <DroppedMainTilesCard
             droppedTiles={droppedTiles}
             setDroppedTiles={setDroppedTiles}
@@ -218,12 +252,35 @@ const caidashboard = () => {
             droppedRiskTiles={droppedRiskTiles}
             setDroppedRiskTiles={setDroppedRiskTiles}
           />
-         </View>
+         </View> */}
+
+<DraggableFlatList
+      data={draggedState}
+      keyExtractor={item => item.id}
+      onDragEnd={({ data }) => setDraggedState(data)}
+      renderItem={({ item , drag }) => {
+        const Component = item.component;
+        const hasData = item.props && Array.isArray(Object.values(item.props)[0]) && Object.values(item.props)[0].length > 0;
+        return (
+         <>
+           {hasData && (
+          <TouchableOpacity onLongPress={drag} style={{ width: '100%' }}>
+            <Text style={styles.tilesHeading}>{item.title}</Text>
+          </TouchableOpacity>
+        )}
+          <View style={{paddingHorizontal:20}}>
+            <Component {...item.props} />
+            </View>
+            </>
+        );
+      }}
+    />
 
           <View style={{ marginBottom: 90 }}></View>
 
           {/* <DashboardDesign/> */}
         </ScrollView>
+        </GestureHandlerRootView>
       </>
 
       {/* First Model  */}
@@ -306,8 +363,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    padding: 20,
+    // padding: 20,
   },
+  
   HeaderContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -481,6 +539,13 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 100,
   },
+  tilesHeading:{
+    fontSize:18,
+    fontWeight:600,
+    marginLeft:40,
+    color:'black',
+    marginBottom:5,
+  }
 });
 
 export default caidashboard;

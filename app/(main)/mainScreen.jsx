@@ -25,8 +25,25 @@ import DroppedAnalyticsCard from "../../components/DroppedAnalyticsCard";
 import DroppedRiskCard from "../../components/DroppedRiskCard";
 import DroppedMainTilesCard from "../../components/DroppedMainTilesCard";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import DraggableFlatList from "react-native-draggable-flatlist";
 
 const { width } = Dimensions.get("window");
+
+import { NativeModules } from 'react-native';
+
+const { SharedStorage } = NativeModules;
+
+const saveWidgetData = async () => {
+  SharedStorage.saveData('widget_text', 'Updated from React Native');
+};
+
+const getWidgetData = () => {
+  SharedStorage.getData('widget_text', (value) => {
+    console.log('Widget Data:', value);
+  });
+};
+
+export { saveWidgetData, getWidgetData };
 
 const MainScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -35,6 +52,9 @@ const MainScreen = () => {
   const [isTilesModalVisible, setIsTilesModalVisible] = useState(false);
   const [isAnalyticsTilesModel, setIsAnalyticsTilesModel] = useState(false);
   const [isRiskTilesModel, setIsRiskTilesModel] = useState(false);
+
+
+
 
   const tilesNames = [
     "Portfolio Tiles",
@@ -63,31 +83,34 @@ const MainScreen = () => {
 
   // dropTiles States
 
+
+
+
   const [droppedAnalyticsTiles, setAnalyticsDroppedTiles] = useState([
-    {
-      id: 1,
-      title: "Analtics",
-      colorCode: "#d1fbfd",
-      image: require("../../assets/images/analyticsGraph.webp"),
-      image2: require("../../assets/images/calender.png"),
-      scaleAnim: new Animated.Value(1),
-      shakeAnim: new Animated.Value(0),
-      showDelete: false,
-      isStatic: true,
-    },
+    // {
+    //   id: 1,
+    //   title: "Analtics",
+    //   colorCode: "#d1fbfd",
+    //   image: require("../../assets/images/analyticsGraph.webp"),
+    //   image2: require("../../assets/images/calender.png"),
+    //   scaleAnim: new Animated.Value(1),
+    //   shakeAnim: new Animated.Value(0),
+    //   showDelete: false,
+    //   isStatic: true,
+    // },
   ]);
 
   const [droppedRiskTiles, setDroppedRiskTiles] = useState([
-    {
-      id: 2,
-      title: "Risk ",
-      colorCode: "#d1fbfd",
-      image: require("../../assets/images/risk.png"),
-      scaleAnim: new Animated.Value(1),
-      shakeAnim: new Animated.Value(0),
-      showDelete: false,
-      isStatic: true,
-    },
+    // {
+    //   id: 2,
+    //   title: "Risk ",
+    //   colorCode: "#d1fbfd",
+    //   image: require("../../assets/images/risk.png"),
+    //   scaleAnim: new Animated.Value(1),
+    //   shakeAnim: new Animated.Value(0),
+    //   showDelete: false,
+    //   isStatic: true,
+    // },
   ]);
   const [droppedTiles, setDroppedTiles] = useState([
     {
@@ -97,26 +120,28 @@ const MainScreen = () => {
       colorCode: "#fcfbca",
       Amount: "£2000",
       image: require("../../assets/images/circleG.png"),
-
+      
       scaleAnim: new Animated.Value(1),
       shakeAnim: new Animated.Value(0),
+      expandAnim: new Animated.Value(0), 
+      isExpanded: false,  
       showDelete: false,
-      isStatic: true,
+      
     },
   ]);
 
   const [DroppedFocusedSecond, setDroppedFocusedSecond] = useState([
-    {
-      id: 1,
-      title: "One Asset",
-      title2: "Management",
-      colorCode: "#cfe2fe",
-      image: require("../../assets/images/cryptograph.png"),
-      scaleAnim: new Animated.Value(1),
-      shakeAnim: new Animated.Value(0),
-      showDelete: false,
-      isStatic: true,
-    },
+    // {
+    //   id: 1,
+    //   title: "One Asset",
+    //   title2: "Management",
+    //   colorCode: "#cfe2fe",
+    //   image: require("../../assets/images/cryptograph.png"),
+    //   scaleAnim: new Animated.Value(1),
+    //   shakeAnim: new Animated.Value(0),
+    //   showDelete: false,
+    //   isStatic: true,
+    // },
   ]);
 
   const handleDropTile = (tile) => {
@@ -175,7 +200,100 @@ const MainScreen = () => {
     });
   };
 
-  // Animation Function on Long press
+  useEffect(()=>{
+    const defaultTile = {   
+      id: 1,
+      title: "Custom",
+      title2: "Portfolio",
+      colorCode: "#fcfbca",
+      Amount: "£2000",
+      image: require("../../assets/images/circleG.png"),
+      scaleAnim: new Animated.Value(1),
+      shakeAnim: new Animated.Value(0),
+      expandAnim: new Animated.Value(0),
+      isExpanded: false,
+      showDelete: false,
+    };
+
+    setDroppedTiles([defaultTile]);
+
+    const defaultTile1 = {  
+      id: 1,
+      title: "Risk ",
+      colorCode: "#d1fbfd",
+      image: require("../../assets/images/loss3.png"),
+      scaleAnim: new Animated.Value(1),
+      shakeAnim: new Animated.Value(0),
+      expandAnim: new Animated.Value(0),
+      isExpanded: false,
+      showDelete: false,
+    };
+  
+    setDroppedRiskTiles([defaultTile1]);
+
+      
+    const defaultTile3 = {
+      id: 1,
+      title: "One Asset",
+      title2: "Management",
+      colorCode: "#cfe2fe",
+      image: require("../../assets/images/cryptograph.png"),
+      scaleAnim: new Animated.Value(1),
+      shakeAnim: new Animated.Value(0),
+      expandAnim: new Animated.Value(0),
+      isExpanded: false,
+      showDelete: false,
+    };
+  
+    setDroppedFocusedSecond([defaultTile3]);
+
+    const defaultTile4 = {
+      id: 1,  
+      title: "Analtics",
+      colorCode: "#d1fbfd",
+      image: require("../../assets/images/analyticsGraph.webp"),
+      image2: require("../../assets/images/calender.png"),
+      scaleAnim: new Animated.Value(1),
+      shakeAnim: new Animated.Value(0),
+      expandAnim: new Animated.Value(0),
+      isExpanded: false,
+      showDelete: false,
+    };
+  
+    setAnalyticsDroppedTiles([defaultTile4]);
+
+  },[])
+
+  const componentsData = [
+    {
+      id: '1',
+      title:'Profile Tiles',
+      component: DroppedMainTilesCard,
+      props: { droppedTiles, setDroppedTiles }
+    },
+    {
+      id: '2',
+      title:'Focused Tiles',
+      component: DropedFocusedCard,
+      props: { DroppedFocusedSecond, setDroppedFocusedSecond }
+    },
+    {
+      id: '3',
+      title:'Analytic Tiles',
+      component: DroppedAnalyticsCard,
+      props: { droppedAnalyticsTiles, setAnalyticsDroppedTiles }
+    },
+    {
+      id: '4',
+      title:'Risk Tiles',
+      component: DroppedRiskCard,
+      props: { droppedRiskTiles, setDroppedRiskTiles }
+    }
+  ];
+useEffect(()=>{
+  setDraggedState(componentsData)
+},[droppedTiles , DroppedFocusedSecond , droppedAnalyticsTiles , droppedRiskTiles])
+  const [draggedState , setDraggedState] = useState(componentsData);
 
   return (
     <>
@@ -219,48 +337,34 @@ const MainScreen = () => {
         </TouchableOpacity>
         </View>
         <GestureHandlerRootView>
-        <ScrollView style={styles.container}>
-          
-          {/* first flatList    */}
-
-         <View >
-         <DroppedMainTilesCard
-            droppedTiles={droppedTiles}
-            setDroppedTiles={setDroppedTiles}
-          />
-         </View>
-
-         <View >
-         {DroppedFocusedSecond.length == 0 ? null : (
-            <>
-              <DropedFocusedCard
-                DroppedFocusedSecond={DroppedFocusedSecond}
-                setDroppedFocusedSecond={setDroppedFocusedSecond}
-
-              />
+     
+        <View style={{height:'90%'}}> 
+        <DraggableFlatList
+      data={draggedState}
+      keyExtractor={item => item.id}
+      onDragEnd={({ data }) => setDraggedState(data)}
+      renderItem={({ item , drag }) => {
+        const Component = item.component;
+        const hasData = item.props && Array.isArray(Object.values(item.props)[0]) && Object.values(item.props)[0].length > 0;
+        return (
+         <>
+            {hasData && (
+          <TouchableOpacity onLongPress={drag} style={{ width: '100%'}}>
+            <Text style={styles.tilesHeading}>{item.title}</Text>
+          </TouchableOpacity>
+        )}
+          <View style={{paddingHorizontal:20}}>
+            <Component {...item.props} />
+            </View>
             </>
-          )}
-         </View>
-
-         <View >
-         <DroppedAnalyticsCard
-            droppedAnalyticsTiles={droppedAnalyticsTiles}
-            setAnalyticsDroppedTiles={setAnalyticsDroppedTiles}
-          />
-         </View>
-
-         <View >
-         <DroppedRiskCard
-            droppedRiskTiles={droppedRiskTiles}
-            setDroppedRiskTiles={setDroppedRiskTiles}
-          />
-         </View>
-
-          <View style={{ marginBottom: 90 }}></View>
-
+        );
+      }}
+    />
+ 
+        </View>
           {/* <DashboardDesign/> */}
          
-        </ScrollView>
+        
         </GestureHandlerRootView>
       </>
 
@@ -344,12 +448,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    padding: 20,
+    // padding: 20,
+    paddingVertical:20
   },
   HeaderContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 15,
+    paddingVertical:5,
 
     alignItems: "center",
   },
@@ -377,7 +483,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    marginTop: 5,
   },
   DataUploadContainer: {
     width: 36,
@@ -518,6 +623,13 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 100,
   },
+  tilesHeading:{
+    fontSize:18,
+    fontWeight:600,
+    marginLeft:40,
+    color:'black',
+    marginBottom:5,
+  }
 });
 
 export default MainScreen;

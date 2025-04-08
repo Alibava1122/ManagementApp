@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,8 +9,9 @@ import {
   FlatList,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import DraggableFlatList from "react-native-draggable-flatlist";
 
-const DropedFocusedCard = ({
+const DropedFocusedCard = ({  
   DroppedFocusedSecond,
   setDroppedFocusedSecond,
 }) => {
@@ -20,6 +21,8 @@ const DropedFocusedCard = ({
     if (!tile.expandAnim) tile.expandAnim = new Animated.Value(0);
     if (tile.isExpanded === undefined) tile.isExpanded = false;
   });
+
+
 
   const handleLongPressOnFocusedSecond = (tile) => {
     Animated.spring(tile.scaleAnim, {
@@ -79,6 +82,7 @@ const DropedFocusedCard = ({
 
   const toggleExpand = (tile) => {
     tile.isExpanded = !tile.isExpanded;
+    
 
     Animated.timing(tile.expandAnim, {
       toValue: tile.isExpanded ? 170 : 0,
@@ -90,12 +94,13 @@ const DropedFocusedCard = ({
   };
 
   return (
-    <View  style={{marginTop:-16}} >
-      <FlatList
-        data={DroppedFocusedSecond}
-        contentContainerStyle={styles.listContainer}
+    <View style={{marginTop:3}} >
+       <DraggableFlatList
+        data={ DroppedFocusedSecond}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+        onDragEnd={({ data }) => setDroppedFocusedSecond(data)}
+        renderItem={({ item, drag }) => (
+          <View style={styles.listContainer}>
           <Animated.View
             style={[
               {
@@ -121,7 +126,12 @@ const DropedFocusedCard = ({
                 handlePressOutsideDroppedSecond(item);
                 toggleExpand(item);
               }}
-              onLongPress={() => handleLongPressOnFocusedSecond(item)}
+              
+              onLongPress={() => {
+                handleLongPressOnFocusedSecond(item);
+                drag();
+              }}
+              delayLongPress={200}
               activeOpacity={0.9}
               style={[
                 styles.FocusedTileContainer,
@@ -189,6 +199,7 @@ const DropedFocusedCard = ({
               </Text>
             </Animated.View>
           </Animated.View>
+          </View>
         )}
       />
     </View>
@@ -201,7 +212,9 @@ const styles = StyleSheet.create({
   listContainer: {
     justifyContent: "space-around",
     alignItems: "center",
-    padding: 7, 
+    paddingHorizontal:9,
+    marginTop:5
+    
   },
   FocusedTileContainer: {
     width: "100%",
@@ -218,7 +231,7 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     position: "absolute",
-    top: -4,
+    top: 0,
     right: 0,
     zIndex: 1,
   },
@@ -242,7 +255,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     paddingHorizontal: 10,
     paddingVertical: 5,
-    width: "100%",
+    // width: "100%",
+   
     
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

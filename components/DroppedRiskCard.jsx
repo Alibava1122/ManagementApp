@@ -8,8 +8,9 @@ import {
   Animated,
   Dimensions,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
+import DraggableFlatList from "react-native-draggable-flatlist";
 const { width } = Dimensions.get("window");
 
 const DroppedRiskCard = ({ setDroppedRiskTiles, droppedRiskTiles }) => {
@@ -19,6 +20,25 @@ const DroppedRiskCard = ({ setDroppedRiskTiles, droppedRiskTiles }) => {
     if (!tile.expandAnim) tile.expandAnim = new Animated.Value(0);
     if (tile.isExpanded === undefined) tile.isExpanded = false;
   });
+
+
+
+  // useEffect(() => {
+    
+  //   const defaultTile = {  
+  //     id: 1,
+  //     title: "Risk ",
+  //     colorCode: "#d1fbfd",
+  //     image: require("../assets/images/loss3.png"),
+  //     scaleAnim: new Animated.Value(1),
+  //     shakeAnim: new Animated.Value(0),
+  //     expandAnim: new Animated.Value(0),
+  //     isExpanded: false,
+  //     showDelete: false,
+  //   };
+  
+  //   setDroppedRiskTiles([defaultTile]);
+  // }, []);
 
   const handleLongPressOnRisk = (tile) => {
     // Zoom in
@@ -87,18 +107,14 @@ const DroppedRiskCard = ({ setDroppedRiskTiles, droppedRiskTiles }) => {
     setDroppedRiskTiles([...droppedRiskTiles]);
   };
   return (
-    <View style={{ marginTop: -16 }}>
-      <FlatList
+    <View  style={{marginTop:-3}}>
+      <DraggableFlatList
         data={droppedRiskTiles}
-        contentContainerStyle={{
-          justifyContent: "space-around",
-          alignItems: "center",
-          alignContent: "center",
-          padding: 10,
-        }}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item, index }) => {
+        onDragEnd={({ data }) => setDroppedRiskTiles(data)}
+        renderItem={({ item, drop}) => {
           return (
+            <View style={styles.listContainer}>
             <Animated.View
               style={[
                 {
@@ -124,7 +140,14 @@ const DroppedRiskCard = ({ setDroppedRiskTiles, droppedRiskTiles }) => {
                     handlePressOutsideRisk(item);
                     toggleExpand(item);
                   }}
-                  onLongPress={() => handleLongPressOnRisk(item)}
+                  // onLongPress={() => handleLongPressOnRisk(item)}
+                  onLongPress={() => {
+                    handleLongPressOnRisk(item);
+                    if (item.length > 1) {
+                      drag();
+                    }
+                    
+                  }}
                   activeOpacity={0.9}
                   style={[
                     styles.RiskTilesContainer,
@@ -177,18 +200,21 @@ const DroppedRiskCard = ({ setDroppedRiskTiles, droppedRiskTiles }) => {
                   },
                 ]}
               >
-                <View>
-                  <Image
+               
+                 <View >
+                 <Image
                     source={item.image}
                     style={styles.imageFocused}
                     resizeMode="contain"
                   />
-                </View>
-                <Text style={styles.expandedText}>
+              
+                {/* <Text style={styles.expandedText}>
                   {item.title} {item.title2}
-                </Text>
+                </Text> */}
+                 </View>
               </Animated.View>
             </Animated.View>
+            </View>
           );
         }}
       />
@@ -199,6 +225,12 @@ const DroppedRiskCard = ({ setDroppedRiskTiles, droppedRiskTiles }) => {
 export default DroppedRiskCard;
 
 const styles = StyleSheet.create({
+  listContainer: {
+    justifyContent: "space-around",
+    alignItems: "center",
+    paddingVertical:7,
+  //  paddingHorizontal:20
+  },
   deleteButton: {
     position: "absolute",
     top: -4,
@@ -217,8 +249,8 @@ const styles = StyleSheet.create({
     marginBottom: 9,
   },
   imageRisk: {
-    width: 100,
-    height: 100,
+    width: 160,
+    height: 160,
   },
   RiskimageContainer: {
     width: width * 0.8,
@@ -227,9 +259,10 @@ const styles = StyleSheet.create({
   },
   expandedContainer: {
     overflow: "hidden",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    width: "100%",
+    // paddingHorizontal: 10,
+    // paddingVertical: 5,
+    // width: "100%",
+
 
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -244,9 +277,9 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 5,
   },
   imageFocused: {
-    width: 120,
-    height: 120,
-    borderRadius: 100,
+    width: 190,
+    height: 190,
+    
   },
   expandedText: {
     marginTop: 5,

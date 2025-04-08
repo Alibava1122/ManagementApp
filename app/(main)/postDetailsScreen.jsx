@@ -1,69 +1,81 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Image  , ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Image, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-
-
-
+import { AntDesign } from "@expo/vector-icons";
 
 export default function postDetailsScreen() {
-    const params = useLocalSearchParams(); 
+    const params = useLocalSearchParams();
+    console.log('params--->' , params)
+    const [comment, setComment] = useState("");
+    const [comments, setComments] = useState([]);
+    const [likes, setLikes] = useState(0);
+    const [liked, setLiked] = useState(false);
 
+    const handleComment = () => {
+        if (comment.trim() !== "") {
+            setComments([...comments, comment]);
+            setComment("");
+        }
+    };
 
-  const [comment, setComment] = useState("");
-  const [comments, setComments] = useState([]);
+    const handleLike = () => {
+        setLiked(!liked);
+        setLikes(liked ? likes - 1 : likes + 1);
+    };
 
- 
-
-  const handleComment = () => {
-    if (comment.trim() !== "") {
-      setComments([...comments, comment]);
-      setComment("");
-    }
-  };
-
-
-  return (
-    <ScrollView style={styles.container}>
-        <View style={styles.imageContainer}>
-               
-               <Image source={ params.image} style={styles.postImage} resizeMode="cover" />
-              </View>
-      <Text style={styles.postTitle}>{params.title}</Text>
-      <Text style={styles.postContent}>{params.content}</Text>
-
-      {/* Comment Section */}
-      <View style={styles.commentSection}>
-        <TextInput
-          style={styles.input}
-          placeholder="Write a comment..."
-          value={comment}
-          onChangeText={setComment}
-        />
-        <TouchableOpacity style={styles.commentButton} onPress={handleComment}>
-          <Text style={styles.commentButtonText}>Post</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Display Comments */}
-      <FlatList
-        data={comments}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-            <View style={styles.commentBox}>
-            <Image 
-            source={params.image2}
-              style={styles.avatar} 
-            />
-            <View style={styles.commentContent}>
-              <Text style={styles.name}>John Doe</Text>
-              <Text>{item}</Text>
+    return (
+        <ScrollView style={styles.container}>
+            <View style={styles.imageContainer}>
+                <Image source={params.image} style={styles.postImage} resizeMode="cover" />
             </View>
+            <Text style={styles.postTitle}>{params.title}</Text>
+            <Text style={styles.postContent}>{params.content}</Text>
+
+            {/* Like Button */}
+           <View style={styles.postBottomSection}>
+         
+          <View>
+          <TouchableOpacity style={styles.likeButton} onPress={handleLike}>
+                <Text style={styles.likeButtonText}>{liked ? <AntDesign name="like1" size={23} color="blue" /> : <AntDesign name="like2" size={23} color="black" />} ({likes})</Text>
+                
+            </TouchableOpacity>
           </View>
-        )}
-      />
-      <View style={{height:30}}></View>
-    </ScrollView>
-  );
+            <View style={styles.creatorContainer}>
+            <Image source={params.image2} style={styles.creatorImage} />
+            <Text style={styles.creatorText}>{params.creator}</Text>
+            </View>
+           </View>
+
+            {/* Comment Section */}
+            <View style={styles.commentSection}>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Write a comment..."
+                    value={comment}
+                    onChangeText={setComment}
+                />
+                <TouchableOpacity style={styles.commentButton} onPress={handleComment}>
+                    <Text style={styles.commentButtonText}>Post</Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* Display Comments */}
+            <FlatList
+                data={comments}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                    <View style={styles.commentBox}>
+                        <Image source={params.image2} style={styles.avatar} />
+                        <View style={styles.commentContent}>
+                            <Text style={styles.name}>John Doe</Text>
+                            <Text>{item}</Text>
+                        </View>
+                    </View>
+                )}
+            />
+            <View style={{ height: 30 }}></View>
+        </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -145,4 +157,28 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  postBottomSection:{
+    width:'100%',
+    flexDirection:'row',
+    justifyContent:'space-between',
+      
+  },
+  creatorImage: {
+    width: 25,
+    height: 25,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  creatorContainer:{
+    flexDirection:'row',
+    
+  },
+  creatorText:{
+   
+      fontSize: 13,
+      color: "black",
+     fontWeight:'500',
+     marginTop:5
+  
+  }
 });

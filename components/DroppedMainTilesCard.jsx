@@ -7,8 +7,9 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
+import DraggableFlatList from "react-native-draggable-flatlist";
 
 const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
   droppedTiles.forEach((tile) => {
@@ -18,8 +19,9 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
     if (tile.isExpanded === undefined) tile.isExpanded = false;
   });
 
+
+
   const handleLongPress = (tile) => {
-    // Zoom in
     Animated.spring(tile.scaleAnim, {
       toValue: 1.02,
       useNativeDriver: true,
@@ -70,11 +72,9 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
     }
   };
 
-  const handleDeleteTile = (tileId) => {
-    setDroppedTiles(droppedTiles.filter((tile) => tile.id !== tileId));
-  };
   const toggleExpand = (tile) => {
     tile.isExpanded = !tile.isExpanded;
+  
 
     Animated.timing(tile.expandAnim, {
       toValue: tile.isExpanded ? 170 : 0,
@@ -85,13 +85,18 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
     setDroppedTiles([...droppedTiles]);
   };
 
+  const handleDeleteTile = (tileId) => {
+    setDroppedTiles(droppedTiles.filter((tile) => tile.id !== tileId));
+  };
+
   return (
     <View>
-      <FlatList
+      <DraggableFlatList
         data={droppedTiles}
-        contentContainerStyle={styles.listContainer}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+        onDragEnd={({ data }) => setDroppedTiles(data)}
+        renderItem={({ item, drag }) => (
+          <View style={styles.listContainer}>
           <Animated.View
             style={[
               {
@@ -110,49 +115,53 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
                 <AntDesign name="closecircleo" size={24} color="black" />
               </TouchableOpacity>
             )}
-           <View>
-           <TouchableOpacity
-              style={[
-                styles.tileContainer,
-                { backgroundColor: item.colorCode },
-              ]}
-              onPress={() => {
-                handlePressOutside(item);
-                toggleExpand(item);
-              }}
-              onLongPress={() => handleLongPress(item)}
-              activeOpacity={0.9}
-            >
-              <View style={styles.textContainer}>
-                <View>
-                  <Text style={styles.headerText}>{item.title}</Text>
-                  <Text style={styles.headerText}>{item.title2}</Text>
-                  <Text style={styles.headerTextAmount}>{item.Amount}</Text>
-                </View>
-              </View>
-              <View style={styles.imageContainer}>
-                <Image
-                  source={item.image}
-                  style={styles.image}
-                  resizeMode="contain"
-                />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-                  style={styles.closeIcon}
-                  onPress={() => {
-                    toggleExpand(item);
-                  }}
-                >
-                  <View style={styles.iconContainer}>
-                    {item.isExpanded ? (
-                      <AntDesign name="upcircleo" size={19} color="black" />
-                    ) : (
-                      <AntDesign name="downcircleo" size={19} color="black" />
-                    )}
+            <View>
+              <TouchableOpacity
+                style={[
+                  styles.tileContainer,
+                  { backgroundColor: item.colorCode },
+                ]}
+                onPress={() => {
+                  handlePressOutside(item);
+                  toggleExpand(item);
+                }}
+                onLongPress={() => {
+                  handleLongPress(item);
+                  drag();
+                }}
+                delayLongPress={200}
+                activeOpacity={0.9}
+              >
+                <View style={styles.textContainer}>
+                  <View>
+                    <Text style={styles.headerText}>{item.title}</Text>
+                    <Text style={styles.headerText}>{item.title2}</Text>
+                    <Text style={styles.headerTextAmount}>{item.Amount}</Text>
                   </View>
-                </TouchableOpacity>
-           </View>
+                </View>
+                <View style={styles.imageContainer}>
+                  <Image
+                    source={item.image}
+                    style={styles.image}
+                    resizeMode="contain"
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.closeIcon}
+                onPress={() => {
+                  toggleExpand(item);
+                }}
+              >
+                <View style={styles.iconContainer}>
+                  {item.isExpanded ? (
+                    <AntDesign name="upcircleo" size={19} color="black" />
+                  ) : (
+                    <AntDesign name="downcircleo" size={19} color="black" />
+                  )}
+                </View>
+              </TouchableOpacity>
+            </View>
             <View style={styles.expandedMain}>
               <Animated.View
                 style={[
@@ -189,6 +198,7 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
               </Animated.View>
             </View>
           </Animated.View>
+          </View>
         )}
       />
     </View>
@@ -198,11 +208,11 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
 export default DroppedMainTiles;
 
 const styles = StyleSheet.create({
- 
   listContainer: {
     justifyContent: "space-around",
     alignItems: "center",
-    padding: 19,
+    // padding: 19,
+   paddingHorizontal:20
   },
   deleteButton: {
     position: "absolute",
@@ -211,7 +221,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   tileContainer: {
-    marginTop:10,
+    marginTop: 10,
     borderRadius: 15,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -252,8 +262,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   image: {
-    width: 40,
-    height: 40,
+    width: 70,
+    height: 70,
   },
   expandedMain: {
     paddingHorizontal: 8,
@@ -304,5 +314,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 30,
   },
- 
 });
+

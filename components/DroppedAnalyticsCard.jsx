@@ -7,8 +7,9 @@ import {
   Image,
   FlatList,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
+import DraggableFlatList from "react-native-draggable-flatlist";
 
 const DroppedAnalyticsCard = ({
   setAnalyticsDroppedTiles,
@@ -20,6 +21,7 @@ const DroppedAnalyticsCard = ({
     if (!tile.expandAnim) tile.expandAnim = new Animated.Value(0);
     if (tile.isExpanded === undefined) tile.isExpanded = false;
   });
+
 
   const handleLongPressOnAnalytics = (tile) => {
     // Zoom in
@@ -90,19 +92,14 @@ const DroppedAnalyticsCard = ({
     setAnalyticsDroppedTiles([...droppedAnalyticsTiles]);
   };
   return (
-    <View style={{ marginTop: -11 }}>
-      <FlatList
+    <View >
+      <DraggableFlatList
         data={droppedAnalyticsTiles}
-        contentContainerStyle={{
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 10,
-          // height: 166,
-          // backgroundColor:'black',
-        }}
+        onDragEnd={({ data }) => setAnalyticsDroppedTiles(data)}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item, index }) => {
+        renderItem={({ item , drag }) => {
           return (
+            <View style={styles.listContainer}>
             <Animated.View
               style={[
                 {
@@ -128,7 +125,11 @@ const DroppedAnalyticsCard = ({
                   handlePressOutsideAnalytics(item);
                   toggleExpand(item);
                 }}
-                onLongPress={() => handleLongPressOnAnalytics(item)}
+                
+                onLongPress={() => {
+                  handleLongPressOnAnalytics(item);
+                  drag();
+                }}
                 activeOpacity={0.9}
                 style={[
                   styles.largeTileSize,
@@ -190,6 +191,7 @@ const DroppedAnalyticsCard = ({
               </View>
             </Animated.View>
             </Animated.View>
+            </View>
           );
         }}
       />
@@ -200,9 +202,16 @@ const DroppedAnalyticsCard = ({
 export default DroppedAnalyticsCard;
 
 const styles = StyleSheet.create({
+  listContainer: {
+    justifyContent: "space-around",
+    alignItems: "center",
+    // padding: 19,
+   paddingHorizontal:13,
+   marginTop:4
+  },
   deleteButton: {
     position: "absolute",
-    top: -4,
+    top: 0,
     right: 0,
     zIndex: 1,
   },
@@ -226,7 +235,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     paddingHorizontal: 10,
     paddingVertical: 5,
-    width: "100%",
+    // width: "100%",
     
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

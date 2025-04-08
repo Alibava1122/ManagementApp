@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+   android:background="@android:color/white"
+    android:padding="10dp">
+
+    <!-- Tile Background -->
+    <LinearLayout
+        android:id="@+id/tileContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:background="@drawable/tile_background"
+        android:gravity="center_vertical">
+
+        <!-- Text Content -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/widgetTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Custom "
+                android:textSize="16sp"
+                android:textColor="#000"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/widgetSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Portfolio"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#444"/>
+                
+            
+            <TextView
+                android:id="@+id/widgetAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="£ 1000"
+                android:textSize="14sp"
+                android:textColor="#222"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- Image -->
+        <FrameLayout
+    android:layout_width="80dp"
+    android:layout_height="75dp"
+    android:background="@drawable/rectangle_border"
+    android:gravity="center">  <!-- This ensures the child elements are centered -->
+
+    <ImageView
+        android:id="@+id/widgetImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"  
+        android:padding="10dp" 
+        android:src="@drawable/my_image"
+        android:scaleType="centerInside"/>
+</FrameLayout>
+    </LinearLayout>
+</RelativeLayout>

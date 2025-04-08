@@ -19,8 +19,8 @@ import {
     
     const [availableTiles] = useState([
   
-      { id: 1 , colorCode:'#fee0e1', image: require("../assets/images/risk.png") },
-      { id: 2 , colorCode:'#fee0e1', image: require("../assets/images/analyticsG3.png") },
+      { id: 1 , colorCode:'#fee0e1', image: require("../assets/images/loss2.jpg") },
+      { id: 2 , colorCode:'#fee0e1', image: require("../assets/images/loss3.png") },
     ]);
   
     useEffect(() => {
@@ -195,8 +195,8 @@ import {
       
     },
     image: {
-      width: 100,
-      height: 100,
+      width: 160,
+      height: 130,
       
     },
    
