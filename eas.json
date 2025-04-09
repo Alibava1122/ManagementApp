@@ -6,7 +6,11 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "API_URL": "http://localhost:5000/api",
+        "AUTH_TOKEN_KEY":"asset_management_token"
+      }
     },
     "preview": {
       "distribution": "internal",
@@ -15,10 +19,15 @@
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "API_URL": "http://localhost:5000/api",
+        "AUTH_TOKEN_KEY":"asset_management_token"
+      }
     }
   },
   "submit": {
     "production": {}
   }
+
 }

@@ -5,137 +5,193 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  TextInput,
   Platform,
   ToastAndroid,
   Image,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 import { Formik } from 'formik';
-
 import { signupValidationSchema } from '../../utils/validationSchemas';
-import { navigate } from 'expo-router/build/global-state/routing';
-import { Link ,useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import CustomTextInput from '../../components/CustomTextInput';
-import { LinearGradient } from "expo-linear-gradient";
+import { LinearGradient } from 'expo-linear-gradient';
 import LoginButtons from '../../components/LoginButtons';
-
-
+import { useAuth } from '../../context/AuthContext'; 
 
 const SignupScreen = () => {
-    const router = useRouter();
-    const handleSignup = async (values) => {
-      if(Platform.OS === "android"){
+  const router = useRouter();
+  const { register, loading } = useAuth();
+
+  const handleSignup = async (values) => {
+    try {
+      const { username, email, password } = values;
+
+      // Send user data to the register API
+      await register({ name:username, email, password });
+
+      if (Platform.OS === 'android') {
         ToastAndroid.showWithGravity(
-          'Login Successful',
+          'Signup Successful',
           ToastAndroid.SHORT,
-          ToastAndroid.CENTER,
+          ToastAndroid.CENTER
         );
-      } 
+      }
 
-      console.log(values);
-      // ToastAndroid.show('Login Successful', ToastAndroid.SHORT);
       router.navigate('/(tabs)');
-    };
-  
+    } catch (error) {
+      console.error('Signup error:', error);
+      if (Platform.OS === 'android') {
+        ToastAndroid.showWithGravity(
+          error?.response?.data?.message || 'Signup failed',
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
+      }
+    }
+  };
+
   return (
-    <LinearGradient colors={["#e0f7fa", "#92dbd9"]} style={{ flex: 1 }} >
+    <LinearGradient colors={['#e0f7fa', '#92dbd9']} style={{ flex: 1 }}>
       <ScrollView>
-    <SafeAreaView style={styles.container} >
-    <View style={styles.ImageContainer}>
-          <Image
-            source={require("../../assets/images/logo.png")}
-            style={styles.image}
-          />
-          <Text style={styles.MainText}>Andorse</Text>
-        </View>
-      <Formik
-        initialValues={{ username: '', email: '', password: '', confirmPassword: '' }}  
-        validationSchema={signupValidationSchema}
-        onSubmit={handleSignup}
-      >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-          <View style={styles.form}>
-           
-           <CustomTextInput
-           Label={'Username'}
-              placeholder="Username"
-              value={values.username}
-              onChangeText={handleChange("username")}
-              onBlur={handleBlur("username")}
-              error={errors.username}
-              touched={touched.username}
+        <SafeAreaView style={styles.container}>
+          <View style={styles.ImageContainer}>
+            <Image
+              source={require('../../assets/images/logo.png')}
+              style={styles.image}
             />
-
-            <CustomTextInput
-             Label={'Email'}
-              placeholder="Email"
-              value={values.email}
-              onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
-              keyboardType="email-address"
-              error={errors.email}
-              touched={touched.email}
-            />
-
-            <CustomTextInput
-             Label={'Password'}
-              placeholder="Password"
-              value={values.password}
-              onChangeText={handleChange("password")}
-              onBlur={handleBlur("password")}
-              secureTextEntry
-              error={errors.password}
-              touched={touched.password}
-            />
-
-            <CustomTextInput
-             Label={'Confirm Password'}
-              placeholder="Confirm Password"
-              value={values.confirmPassword}
-              onChangeText={handleChange("confirmPassword")}
-              onBlur={handleBlur("confirmPassword")}
-              secureTextEntry
-              error={errors.confirmPassword}
-              touched={touched.confirmPassword}
-            />
- 
-            <TouchableOpacity style={{alignItems:'center' , justifyContent:'center' , marginTop:10 , marginBottom:10}} onPress={handleSubmit} >
-            <LinearGradient
-                  style={styles.button}
-                  colors={["#00a8a9", "#92dbd9", "#FFFDD0", "#00a8a9"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                >
-             <Text style={styles.buttonText}>Sign Up</Text>
-             </LinearGradient>
-            </TouchableOpacity>
-
-            <LoginButtons buttonName={'Continue with goggle'}  image={require("../../assets/images/goggle.png")}/>
-             <LoginButtons buttonName={'Continue with facebook'}  image={require("../../assets/images/facebook.png")}/>
-             <LoginButtons buttonName={'Continue with Microsoft'}  image={require("../../assets/images/micro.png")}/>
-             <LoginButtons buttonName={'Continue with X'}  image={require("../../assets/images/x.png")}/>
-             <LoginButtons buttonName={'Continue with Apple'}  image={require("../../assets/images/apple.png")}/>
-             <LoginButtons buttonName={'Continue with Linkdin'}  image={require("../../assets/images/linkdin.png")}/>
-             <LoginButtons buttonName={'Continue with Github'}  image={require("../../assets/images/git.png")}/>
-             <LoginButtons buttonName={'Continue with Discord'}  image={require("../../assets/images/discord.png")}/>
-      
-
-
-            <TouchableOpacity
-             
-              style={styles.linkButton}
-            
-            >
-              <Link href={'/loginScreen'}>
-              <Text style={styles.linkText}>Already have an account? Login</Text>
-              </Link>
-            </TouchableOpacity>
+            <Text style={styles.MainText}>Andorse</Text>
           </View>
-        )}
-      </Formik>
-    </SafeAreaView>
-    </ScrollView>
+          <Formik
+            initialValues={{
+              username: '',
+              email: '',
+              password: '',
+              confirmPassword: '',
+            }}
+            validationSchema={signupValidationSchema}
+            onSubmit={handleSignup}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+            }) => (
+              <View style={styles.form}>
+                <CustomTextInput
+                  Label={'Username'}
+                  placeholder="Username"
+                  value={values.username}
+                  onChangeText={handleChange('username')}
+                  onBlur={handleBlur('username')}
+                  error={errors.username}
+                  touched={touched.username}
+                />
+
+                <CustomTextInput
+                  Label={'Email'}
+                  placeholder="Email"
+                  value={values.email}
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  keyboardType="email-address"
+                  error={errors.email}
+                  touched={touched.email}
+                />
+
+                <CustomTextInput
+                  Label={'Password'}
+                  placeholder="Password"
+                  value={values.password}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  secureTextEntry
+                  error={errors.password}
+                  touched={touched.password}
+                />
+
+                <CustomTextInput
+                  Label={'Confirm Password'}
+                  placeholder="Confirm Password"
+                  value={values.confirmPassword}
+                  onChangeText={handleChange('confirmPassword')}
+                  onBlur={handleBlur('confirmPassword')}
+                  secureTextEntry
+                  error={errors.confirmPassword}
+                  touched={touched.confirmPassword}
+                />
+
+                <TouchableOpacity
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}
+                  onPress={handleSubmit}
+                  disabled={loading}
+                >
+                  <LinearGradient
+                    style={styles.button}
+                    colors={['#00a8a9', '#92dbd9', '#FFFDD0', '#00a8a9']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                  >
+                    <Text style={styles.buttonText}>
+                      {/* {loading ? 'Signing Up...' : 'Sign Up'} */}
+                      Sign Up
+                    </Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+
+                {/* Social Logins */}
+                <LoginButtons
+                  buttonName={'Continue with goggle'}
+                  image={require('../../assets/images/goggle.png')}
+                />
+                <LoginButtons
+                  buttonName={'Continue with facebook'}
+                  image={require('../../assets/images/facebook.png')}
+                />
+                <LoginButtons
+                  buttonName={'Continue with Microsoft'}
+                  image={require('../../assets/images/micro.png')}
+                />
+                <LoginButtons
+                  buttonName={'Continue with X'}
+                  image={require('../../assets/images/x.png')}
+                />
+                <LoginButtons
+                  buttonName={'Continue with Apple'}
+                  image={require('../../assets/images/apple.png')}
+                />
+                <LoginButtons
+                  buttonName={'Continue with Linkdin'}
+                  image={require('../../assets/images/linkdin.png')}
+                />
+                <LoginButtons
+                  buttonName={'Continue with Github'}
+                  image={require('../../assets/images/git.png')}
+                />
+                <LoginButtons
+                  buttonName={'Continue with Discord'}
+                  image={require('../../assets/images/discord.png')}
+                />
+
+                <TouchableOpacity style={styles.linkButton}>
+                  <Link href={'/loginScreen'}>
+                    <Text style={styles.linkText}>
+                      Already have an account? Login
+                    </Text>
+                  </Link>
+                </TouchableOpacity>
+              </View>
+            )}
+          </Formik>
+        </SafeAreaView>
+      </ScrollView>
     </LinearGradient>
   );
 };
