@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { storeData, getData } from '../utils/storage';
+import { 
+  assetAPI, 
+  cryptoAPI, 
+  realEstateAPI, 
+  cashAPI, 
+  stockAPI 
+} from '../utils/api';
+import Toast from 'react-native-toast-message';
 
 const AssetContext = createContext();
 
@@ -10,35 +18,198 @@ export const AssetProvider = ({ children }) => {
   const [cryptos, setCryptos] = useState([]);
   const [properties, setProperties] = useState([]);
   const [cashEntries, setCashEntries] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const addStock = (stock) => {
-    setStocks([...stocks, { ...stock, id: Date.now().toString() }]);
+  // Fetch all assets on mount
+  useEffect(() => {
+    fetchAllAssets();
+  }, []);
+
+  const fetchAllAssets = async () => {
+    setLoading(true);
+    try {
+      const [stocksRes, cryptosRes, propertiesRes, cashRes] = await Promise.all([
+        stockAPI.getAllStocks(),
+        cryptoAPI.getAllCryptos(),
+        realEstateAPI.getAllProperties(),
+        cashAPI.getAllCashEntries(),
+      ]);
+
+      setStocks(stocksRes.data);
+      setCryptos(cryptosRes.data);
+      setProperties(propertiesRes.data);
+      setCashEntries(cashRes.data);
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to fetch assets',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const addCrypto = (crypto) => {
-    setCryptos([...cryptos, { ...crypto, id: Date.now().toString() }]);
+  const addStock = async (stock) => {
+ 
+    try {
+     
+      const response = await stockAPI.addStock(stock);
+      // console.log('stock from conetxt',response)
+      setStocks([...stocks, response.data]);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Stock added successfully',
+      });
+      return response.data;
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to add stock',
+      });
+    }
   };
 
-  const addProperty = (property) => {
-    setProperties([...properties, { ...property, id: Date.now().toString() }]);
-  };
-  const addCashEntry = (entry) => {
-    setCashEntries([...cashEntries, { ...entry, id: Date.now().toString() }]);
+  const addCrypto = async (crypto) => {
+    try {
+      const response = await cryptoAPI.addCrypto(crypto);
+      setCryptos([...cryptos, response.data]);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Crypto added successfully',
+      });
+      return response.data;
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to add crypto',
+      });
+    }
   };
 
-  const deleteStock = (id) => {
-    setStocks(stocks.filter(stock => stock.id !== id));
+  const addProperty = async (property) => {
+    try {
+      const response = await realEstateAPI.addProperty(property);
+  
+      setProperties([...properties, response.data]);
+  
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Property added successfully',
+      });
+  
+      return response.data; 
+    } catch (error) {
+      console.error('Error adding property:', error.response?.data || error.message); 
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to add property',
+      });
+      return null; 
+    }
   };
 
-  const deleteCrypto = (id) => {
-    setCryptos(cryptos.filter(crypto => crypto.id !== id));
+  const addCashEntry = async (entry) => {
+    try {
+      const response = await cashAPI.addCashEntry(entry);
+      setCashEntries([...cashEntries, response.data]);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Cash entry added successfully',
+      });
+      return response.data;
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to add cash entry',
+      });
+    }
   };
 
-  const deleteProperty = (id) => {
-    setProperties(properties.filter(property => property.id !== id));
+  const deleteStock = async (id) => {
+    try {
+      const response = await assetAPI.deleteAsset(id);
+      setStocks(stocks.filter(stock => stock.id !== id));
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Stock deleted successfully',
+      });
+      return response.data;
+    } catch (error) {
+      
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to delete stock',
+      });
+    }
   };
-  const deleteCashEntry = (id) => {
-    setCashEntries(cashEntries.filter(entry => entry.id !== id));
+
+  const deleteCrypto = async (id) => {
+    try {
+      const response = await assetAPI.deleteAsset(id);
+      setCryptos(cryptos.filter(crypto => crypto.id !== id));
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Crypto deleted successfully',
+      });
+      return response.data;
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to delete crypto',
+      });
+    }
+  };
+
+  const deleteProperty = async (id) => {
+    try {
+      const response = await assetAPI.deleteAsset(id);
+      setProperties(properties.filter(property => property.id !== id));
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Property deleted successfully',
+      });
+      return response.data;
+      
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to delete property',
+      });
+    }
+  };
+
+  const deleteCashEntry = async (id) => {
+    try {
+      const response = await assetAPI.deleteAsset(id);
+      setCashEntries(cashEntries.filter(entry => entry.id !== id));
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Cash entry deleted successfully',
+      });
+      return response.data;
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to delete cash entry',
+      });
+    }
   };
 
   const calculateTotalAssets = () => {
@@ -61,12 +232,24 @@ export const AssetProvider = ({ children }) => {
     };
   };
 
-  const updateStock = async (updatedStock) => {
-    const newStocks = stocks.map(stock => 
-      stock.id === updatedStock.id ? updatedStock : stock
-    );
-    setStocks(newStocks);
-    await storeData('stocks', newStocks);
+  const updateStock = async (id, updatedStock) => {
+    try {
+      const response = await stockAPI.updateStock(id, updatedStock);
+      setStocks(stocks.map(stock => 
+        stock.id === id ? response.data : stock
+      ));
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Stock updated successfully',
+      });
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to update stock',
+      });
+    }
   };
 
   const updateCrypto = async (updatedCrypto) => {
@@ -85,23 +268,6 @@ export const AssetProvider = ({ children }) => {
     await storeData('properties', newProperties);
   };
 
-  useEffect(() => {
-    const loadInitialData = async () => {
-      const savedStocks = await getData('stocks');
-      const savedCryptos = await getData('cryptos');
-      const savedProperties = await getData('properties');
-      const savedCashEntries = await getData('cashEntries');
-
-      if (savedStocks) setStocks(savedStocks);
-      if (savedCryptos) setCryptos(savedCryptos);
-      if (savedProperties) setProperties(savedProperties);
-      if (savedCashEntries) setCashEntries(savedCashEntries);
-      
-    };
-
-    loadInitialData();
-  }, []);
-
   return (
     <AssetContext.Provider
       value={{
@@ -109,6 +275,7 @@ export const AssetProvider = ({ children }) => {
         cryptos,
         properties,
         cashEntries,
+        loading,
         addStock,
         addCrypto,
         addProperty,
@@ -117,10 +284,9 @@ export const AssetProvider = ({ children }) => {
         deleteCrypto,
         deleteProperty,
         deleteCashEntry,
-        calculateTotalAssets,
         updateStock,
-        updateCrypto,
-        updateProperty,
+        calculateTotalAssets,
+        fetchAllAssets,
       }}
     >
       {children}

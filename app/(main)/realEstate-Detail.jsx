@@ -41,7 +41,7 @@ const RealEstateDetail= () => {
      <Text style={styles.title}>{name}</Text>
       <Text style={styles.propertyDetails}>📍 Address: {address}</Text>
       <Text style={styles.propertyDetails}>💰 Purchase Price: ${purchasePrice}</Text>
-      <Text style={styles.propertyDetails}>📅 Purchase Date: {purchaseDate}</Text>
+      <Text style={styles.propertyDetails}>📅 Purchase Date: {purchaseDate.slice(0,10)}</Text>
       <Text style={styles.propertyDetails}>📈 Current Value: ${currentValue}</Text>
       <Text style={styles.propertyDetails}>🏠 Monthly Rent: {monthlyRent}</Text>
 

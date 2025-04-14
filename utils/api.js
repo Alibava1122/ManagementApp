@@ -89,7 +89,6 @@ export const tilesAPI = {
 // Posts API
 export const postsAPI = {
   createPost: (postData) => {
-    console.log('postdata is here from aoi--->' , postData.category , postData.text , postData.file.uri )
     const formData = new FormData();
     formData.append('category', postData.category);
     formData.append('text', postData.text);
@@ -128,6 +127,41 @@ export const setAuthToken = async (token) => {
 
 export const getAuthToken = async () => {
   return await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+};
+
+// Asset APIs
+export const assetAPI = {
+  getAllAssets: () => api.get('/assets'),
+  getAssetById: (id) => api.get(`/assets/${id}`),
+  deleteAsset: (id) => api.delete(`/assets/${id}`),
+};
+
+// Crypto APIs
+export const cryptoAPI = {
+  getAllCryptos: () => api.get('/crypto'),
+  addCrypto: (cryptoData) => api.post('/crypto', cryptoData),
+  updateCrypto: (id, cryptoData) => api.put(`/crypto/${id}`, cryptoData),
+};
+
+// Real Estate APIs
+export const realEstateAPI = {
+  getAllProperties: () => api.get('/real-estate'),
+  addProperty: (propertyData) => api.post('/real-estate', propertyData),
+  updateProperty: (id, propertyData) => api.put(`/real-estate/${id}`, propertyData),
+};
+
+// Cash APIs
+export const cashAPI = {
+  getAllCashEntries: () => api.get('/cash'),
+  addCashEntry: (cashData) => api.post('/cash', cashData),
+  updateCashEntry: (id, cashData) => api.put(`/cash/${id}`, cashData),
+};
+
+// Stock APIs
+export const stockAPI = {
+  getAllStocks: () => api.get('/stocks'),
+  addStock: (stockData) => api.post('/stocks', stockData),
+  updateStock: (id, stockData) => api.put(`/stocks/${id}`, stockData),
 };
 
 export default api; 

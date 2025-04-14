@@ -39,7 +39,7 @@ const StockDetailScreen = () => {
         <Text style={styles.detailText}>
           Purchase Price: ${params.purchasePrice}
         </Text>
-        <Text style={styles.detailText}>Purchase Date: {params.purchaseDate}</Text>
+        <Text style={styles.detailText}>Purchase Date: {params.purchaseDate.slice(0,10)}</Text>
       </View>
     </ScrollView>
   );
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
   },
-  detailText: { fontSize: 16, marginBottom: 10 , color:'#007AFF' },
+  detailText: { fontSize: 16, marginBottom: 10 , color:'black' },
 });
 
 export default StockDetailScreen;

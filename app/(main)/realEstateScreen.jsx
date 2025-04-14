@@ -15,7 +15,7 @@ import { router } from 'expo-router';
 import ModelTextInput from '../../components/ModelTextInput';
 
 const RealEstateScreen = () => {
-  const { properties, addProperty, deleteProperty } = useAssets(); 
+  const { properties, addProperty, deleteProperty  , fetchAllAssets} = useAssets(); 
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
@@ -28,13 +28,21 @@ const RealEstateScreen = () => {
     monthlyRent: '',
   });
 
-  const handleAddProperty = () => {
+  const handleAddProperty = async() => {
     if (!newProperty.name || !newProperty.purchasePrice || !newProperty.currentValue) {
       Alert.alert('Error', 'Please fill all required fields');
       return;
     }
 
-    addProperty({ ...newProperty, id: Date.now().toString() });
+
+
+    try {
+      const response = await addProperty({ ...newProperty });
+      console.log('Property added:', response);
+    } catch (error) {
+      console.error('Error adding property:', error);
+      Alert.alert('Error', 'Something went wrong while adding the property.');
+    }
 
     setNewProperty({
       name: '',
@@ -47,6 +55,7 @@ const RealEstateScreen = () => {
 
     setModalVisible(false);
   };
+  
   const confirmDelete = (entry) => {
     setSelectedEntry(entry);
     setConfirmModalVisible(true);
@@ -54,7 +63,8 @@ const RealEstateScreen = () => {
 
   const handleDelete = () => {
     if (selectedEntry) {
-      deleteProperty(selectedEntry.id);
+      deleteProperty(selectedEntry._id);
+      fetchAllAssets();
       setConfirmModalVisible(false);
       setSelectedEntry(null);
     }
@@ -63,7 +73,7 @@ const RealEstateScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Real Estate Portfolio</Text>
+      {/* <Text style={styles.title}>Real Estate Portfolio</Text> */}
 
       <TouchableOpacity
         style={styles.addButton}
@@ -76,8 +86,8 @@ const RealEstateScreen = () => {
       
           {properties.length > 0 && (
         <View style={styles.propertiesList}>
-          {properties.map((property) => (
-            <TouchableOpacity key={property.id} style={styles.propertyItem} onPress={() => router.push({
+          {properties.map((property , index) => (
+            <TouchableOpacity key={property.id || index} style={styles.propertyItem} onPress={() => router.push({
               pathname: "/realEstate-Detail",
               params: {
                 name: property.name,

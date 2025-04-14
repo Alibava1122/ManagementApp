@@ -15,7 +15,7 @@ import { useAssets } from '../../context/AssetContext';
 import { router } from 'expo-router';
 import ModelTextInput from '../../components/ModelTextInput';
 const CryptoScreen = () => {
-  const { cryptos, addCrypto, deleteCrypto } = useAssets(); 
+  const { cryptos, addCrypto, deleteCrypto , fetchAllAssets } = useAssets(); 
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
@@ -54,7 +54,7 @@ const CryptoScreen = () => {
       return;
     }
 
-    addCrypto({ ...newCrypto }); // Use context method
+    addCrypto({ ...newCrypto }); 
     setNewCrypto({ symbol: '', quantity: '', purchasePrice: '', purchaseDate: '' });
     setModalVisible(false);
   };
@@ -65,7 +65,8 @@ const CryptoScreen = () => {
 
   const handleDelete = () => {
     if (selectedEntry) {
-      deleteCrypto(selectedEntry.id);
+      deleteCrypto(selectedEntry._id);
+      fetchAllAssets();
       setConfirmModalVisible(false);
       setSelectedEntry(null);
     }
@@ -73,7 +74,7 @@ const CryptoScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Crypto Portfolio</Text>
+      {/* <Text style={styles.title}>Crypto Portfolio</Text> */}
 
       <TouchableOpacity style={styles.addAssetButton} onPress={() => setModalVisible(true)}>
         <Text style={styles.buttonText}>Add Crypto Asset</Text>
@@ -82,9 +83,9 @@ const CryptoScreen = () => {
       {cryptos.length > 0 && (
         <View style={styles.cryptosList}>
           <Text style={styles.subtitle}>Your Cryptocurrencies</Text>
-          {cryptos.map((crypto) => (
+          {cryptos.map((crypto , index) => (
             <TouchableOpacity 
-              key={crypto.id} 
+              key={crypto.id || index} 
               style={styles.cryptoItem} 
               onPress={() => router.push({ pathname: '/crypto-details', params: crypto })}
             >
@@ -93,7 +94,7 @@ const CryptoScreen = () => {
                 <Text style={styles.cryptoDetails}>
                   Quantity: {crypto.quantity} | Bought: ${crypto.purchasePrice}
                 </Text>
-                <Text style={styles.cryptoDate}>Purchased: {crypto.purchaseDate}</Text>
+                <Text style={styles.cryptoDate}>Purchased: {crypto.purchaseDate.slice(0,10)}</Text>
               </View>
               <TouchableOpacity style={styles.deleteButton}  onPress={() => confirmDelete(crypto)}>
                 <Text style={styles.deleteButtonText}>Delete</Text>

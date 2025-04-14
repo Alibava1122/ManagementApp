@@ -14,7 +14,7 @@ import { router } from "expo-router";
 import ModelTextInput from "../../components/ModelTextInput";
 
 const cashScreen = () => {
-  const { cashEntries, addCashEntry, deleteCashEntry } = useAssets();
+  const { cashEntries, addCashEntry, deleteCashEntry  ,  fetchAllAssets} = useAssets();
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
@@ -54,7 +54,8 @@ const cashScreen = () => {
 
   const handleDelete = () => {
     if (selectedEntry) {
-      deleteCashEntry(selectedEntry.id);
+      deleteCashEntry(selectedEntry._id);
+      fetchAllAssets();
       setConfirmModalVisible(false);
       setSelectedEntry(null);
     }
@@ -62,7 +63,7 @@ const cashScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Cash Portfolio</Text>
+      {/* <Text style={styles.title}>Cash Portfolio</Text> */}
       {renderCashChart()}
 
       <TouchableOpacity
@@ -74,9 +75,9 @@ const cashScreen = () => {
       {cashEntries.length > 0 && (
         <View style={styles.propertiesList}>
           <Text style={styles.subtitle}>Cash Entries</Text>
-          {cashEntries.map((entry) => (
+          {cashEntries.map((entry , index) => (
             <TouchableOpacity
-              key={entry.id}
+              key={entry.id || index}
               style={styles.propertyItem}
               onPress={() =>
                 router.push({
@@ -94,7 +95,7 @@ const cashScreen = () => {
                 <Text style={styles.propertyDetails}>
                   Amount: ${entry.amount}
                 </Text>
-                <Text style={styles.propertyDetails}>Date: {entry.date}</Text>
+                <Text style={styles.propertyDetails}>Date: {entry?.date.slice(0,10)}</Text>
               </View>
               <TouchableOpacity
                 style={styles.deleteButton}

@@ -45,7 +45,7 @@ const CashDetails = () => {
         <Text style={styles.title}>Cash Entry Details</Text>
         <Text style={styles.detail}>📌 Description: {description}</Text>
         <Text style={styles.detail}>💰 Amount: ${amount}</Text>
-        <Text style={styles.detail}>📅 Date: {date}</Text>
+        <Text style={styles.detail}>📅 Date: {date?.slice(0,10)}</Text>
       </View>
 
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
