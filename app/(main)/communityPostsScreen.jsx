@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -16,51 +16,22 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { usePosts } from "../../context/PostsContext";
 
 const CommunityPostsScreen = () => {
+  const { createPost, error, loading , posts , refresh} = usePosts();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  useEffect(() => {
+    refresh();
+  }, []);
+
 
   const router = useRouter();
   const params = useLocalSearchParams();
 
-const [posts , setPosts] = useState([
-  {
-    id: "1",
-    title: "Crypto Hypes in 2024",
-    content:
-      "Contrary to popular belief, Lorem Ipsum is not simply random text...",
-    image: require("../../assets/images/crypto.png"),
-    image2: require("../../assets/images/profilepic.png"),
-    creator: "John Doe",
-  },
-  {
-    id: "2",
-    title: "Tesla Shares down the markets",
-    content:
-      "It is a long established fact that a reader will be distracted...",
-    image: require("../../assets/images/tesla.jpg"),
-    image2: require("../../assets/images/profilepic.png"),
-    creator: "Alice Smith",
-  },
-  {
-    id: "3",
-    title: "Unique Properties hypes",
-    content:
-      "There are many variations of passages of Lorem Ipsum available...",
-    image: require("../../assets/images/property.jpeg"),
-    image2: require("../../assets/images/profilepic.png"),
-    creator: "Michael Johnson",
-  },
-  {
-    id: "4",
-    title: "Shares of Assets in market",
-    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-    image: require("../../assets/images/assetsnew.jpg"),
-    image2: require("../../assets/images/profilepic.png"),
-    creator: "Sophia Lee",
-  },
-])
+  // console.log('post from community screen--->' , posts.likes)
+
 
   const handleImageUpload = async () => {
 
@@ -72,24 +43,25 @@ const [posts , setPosts] = useState([
     });
     setSelectedImage(result?.assets[0].uri);
   };
-  console.log('seleee--->' ,selectedImage)
 
-  const handleAddPost = (values) => {
-    const newPost = {
-      id: Date.now().toString(), 
-      title: values.title,
-      content: values.description,
-      image: selectedImage ? { uri: selectedImage } : require("../../assets/images/assetsnew.jpg"), 
-      image2: require("../../assets/images/profilepic.png"),
-      creator: "You", 
+  const handleAddPost = async (values) => {
+    const postData = {
+      category: params.title, 
+      text: values.description,
+      file: selectedImage ? { uri: selectedImage } : null,
     };
-  
-    setPosts((prevPosts) => [newPost, ...prevPosts]); 
-    setIsModalVisible(false);
-    setSelectedImage(null);
+
+
+    try {
+      const response = await createPost(postData);
+      console.log('response is here' , response)
+      setIsModalVisible(false);  
+      setSelectedImage(null);  
+    } catch (error) {
+      console.log('Error creating post:', error);
+      
+    }
   };
-
-
 
 
   const validationSchema = Yup.object().shape({
@@ -126,12 +98,16 @@ const [posts , setPosts] = useState([
                 router.push({
                   pathname: "/postDetailsScreen",
                   params: {
-                    id: item.id,
-                    title: item.title,
-                    content: item.content,
-                    image: item.image,
-                    image2: item.image2,
-                    creator: item.creator,
+                    id: item._id,
+                    title: item.category,
+                    content: item.text,
+                    image: item.file.url,
+                    image2: item.user.profilePicture,
+                    creator: item.user?.name,
+                    PostLikes: item.likes,
+                    refresh:refresh
+                    
+                    
                   },
                 })
               }
@@ -139,21 +115,31 @@ const [posts , setPosts] = useState([
               {/* Post Image */}
               <View style={styles.imageContainer}>
                 <Image
-                  source={item.image}
+                   source={{ uri: item.file.url }}
                   style={styles.postImage}
                   resizeMode="cover"
                 />
               </View>
 
               {/* Post Title & Content */}
-              <Text style={styles.postTitle}>{item.title}</Text>
+              <Text style={styles.postTitle}>{item.category}</Text>
               <Text numberOfLines={2} style={styles.postContent}>
                 {item.content}
               </Text>
 
               <View style={styles.creatorContainer}>
-                <Image source={item.image2} style={styles.creatorImage} />
-                <Text style={styles.creatorName}>{item.creator}</Text>
+              {item.user?.profilePicture ? (
+        <Image
+          source={{ uri: item.user.profilePicture }}
+          style={styles.creatorImage}
+        />
+      ) : (
+        <Image
+          source={require("../../assets/images/profilepic.png")}
+          style={styles.creatorImage}
+        />
+      )}
+                <Text style={styles.creatorName}>{item.user?.name || "Unknown"}</Text>
               </View>
             </TouchableOpacity>
           )}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -9,14 +9,14 @@ import {
   ToastAndroid,
   Image,
   ScrollView,
-} from 'react-native';
-import { Formik } from 'formik';
-import { signupValidationSchema } from '../../utils/validationSchemas';
-import { Link, useRouter } from 'expo-router';
-import CustomTextInput from '../../components/CustomTextInput';
-import { LinearGradient } from 'expo-linear-gradient';
-import LoginButtons from '../../components/LoginButtons';
-import { useAuth } from '../../context/AuthContext'; 
+} from "react-native";
+import { Formik } from "formik";
+import { signupValidationSchema } from "../../utils/validationSchemas";
+import { Link, useRouter } from "expo-router";
+import CustomTextInput from "../../components/CustomTextInput";
+import { LinearGradient } from "expo-linear-gradient";
+import LoginButtons from "../../components/LoginButtons";
+import { useAuth } from "../../context/AuthContext";
 
 const SignupScreen = () => {
   const router = useRouter();
@@ -26,23 +26,22 @@ const SignupScreen = () => {
     try {
       const { username, email, password } = values;
 
-      // Send user data to the register API
-      await register({ name:username, email, password });
+      await register({ name: username, email, password });
 
-      if (Platform.OS === 'android') {
+      if (Platform.OS === "android") {
         ToastAndroid.showWithGravity(
-          'Signup Successful',
+          "Signup Successful",
           ToastAndroid.SHORT,
           ToastAndroid.CENTER
         );
       }
 
-      router.navigate('/(tabs)');
+      router.replace('/(tabs)');
     } catch (error) {
-      console.error('Signup error:', error);
-      if (Platform.OS === 'android') {
+      console.error("Signup error:", error);
+      if (Platform.OS === "android") {
         ToastAndroid.showWithGravity(
-          error?.response?.data?.message || 'Signup failed',
+          error?.response?.data?.message || "Signup failed",
           ToastAndroid.SHORT,
           ToastAndroid.CENTER
         );
@@ -51,22 +50,22 @@ const SignupScreen = () => {
   };
 
   return (
-    <LinearGradient colors={['#e0f7fa', '#92dbd9']} style={{ flex: 1 }}>
+    <LinearGradient colors={["#e0f7fa", "#92dbd9"]} style={{ flex: 1 }}>
       <ScrollView>
         <SafeAreaView style={styles.container}>
           <View style={styles.ImageContainer}>
             <Image
-              source={require('../../assets/images/logo.png')}
+              source={require("../../assets/images/logo.png")}
               style={styles.image}
             />
             <Text style={styles.MainText}>Andorse</Text>
           </View>
           <Formik
             initialValues={{
-              username: '',
-              email: '',
-              password: '',
-              confirmPassword: '',
+              username: "",
+              email: "",
+              password: "",
+              confirmPassword: "",
             }}
             validationSchema={signupValidationSchema}
             onSubmit={handleSignup}
@@ -81,43 +80,43 @@ const SignupScreen = () => {
             }) => (
               <View style={styles.form}>
                 <CustomTextInput
-                  Label={'Username'}
+                  Label={"Username"}
                   placeholder="Username"
                   value={values.username}
-                  onChangeText={handleChange('username')}
-                  onBlur={handleBlur('username')}
+                  onChangeText={handleChange("username")}
+                  onBlur={handleBlur("username")}
                   error={errors.username}
                   touched={touched.username}
                 />
 
                 <CustomTextInput
-                  Label={'Email'}
+                  Label={"Email"}
                   placeholder="Email"
                   value={values.email}
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
                   keyboardType="email-address"
                   error={errors.email}
                   touched={touched.email}
                 />
 
                 <CustomTextInput
-                  Label={'Password'}
+                  Label={"Password"}
                   placeholder="Password"
                   value={values.password}
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
                   secureTextEntry
                   error={errors.password}
                   touched={touched.password}
                 />
 
                 <CustomTextInput
-                  Label={'Confirm Password'}
+                  Label={"Confirm Password"}
                   placeholder="Confirm Password"
                   value={values.confirmPassword}
-                  onChangeText={handleChange('confirmPassword')}
-                  onBlur={handleBlur('confirmPassword')}
+                  onChangeText={handleChange("confirmPassword")}
+                  onBlur={handleBlur("confirmPassword")}
                   secureTextEntry
                   error={errors.confirmPassword}
                   touched={touched.confirmPassword}
@@ -125,8 +124,8 @@ const SignupScreen = () => {
 
                 <TouchableOpacity
                   style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    alignItems: "center",
+                    justifyContent: "center",
                     marginTop: 10,
                     marginBottom: 10,
                   }}
@@ -135,7 +134,7 @@ const SignupScreen = () => {
                 >
                   <LinearGradient
                     style={styles.button}
-                    colors={['#00a8a9', '#92dbd9', '#FFFDD0', '#00a8a9']}
+                    colors={["#00a8a9", "#92dbd9", "#FFFDD0", "#00a8a9"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                   >
@@ -148,40 +147,40 @@ const SignupScreen = () => {
 
                 {/* Social Logins */}
                 <LoginButtons
-                  buttonName={'Continue with goggle'}
-                  image={require('../../assets/images/goggle.png')}
+                  buttonName={"Continue with goggle"}
+                  image={require("../../assets/images/goggle.png")}
                 />
                 <LoginButtons
-                  buttonName={'Continue with facebook'}
-                  image={require('../../assets/images/facebook.png')}
+                  buttonName={"Continue with facebook"}
+                  image={require("../../assets/images/facebook.png")}
                 />
                 <LoginButtons
-                  buttonName={'Continue with Microsoft'}
-                  image={require('../../assets/images/micro.png')}
+                  buttonName={"Continue with Microsoft"}
+                  image={require("../../assets/images/micro.png")}
                 />
                 <LoginButtons
-                  buttonName={'Continue with X'}
-                  image={require('../../assets/images/x.png')}
+                  buttonName={"Continue with X"}
+                  image={require("../../assets/images/x.png")}
                 />
                 <LoginButtons
-                  buttonName={'Continue with Apple'}
-                  image={require('../../assets/images/apple.png')}
+                  buttonName={"Continue with Apple"}
+                  image={require("../../assets/images/apple.png")}
                 />
                 <LoginButtons
-                  buttonName={'Continue with Linkdin'}
-                  image={require('../../assets/images/linkdin.png')}
+                  buttonName={"Continue with Linkdin"}
+                  image={require("../../assets/images/linkdin.png")}
                 />
                 <LoginButtons
-                  buttonName={'Continue with Github'}
-                  image={require('../../assets/images/git.png')}
+                  buttonName={"Continue with Github"}
+                  image={require("../../assets/images/git.png")}
                 />
                 <LoginButtons
-                  buttonName={'Continue with Discord'}
-                  image={require('../../assets/images/discord.png')}
+                  buttonName={"Continue with Discord"}
+                  image={require("../../assets/images/discord.png")}
                 />
 
                 <TouchableOpacity style={styles.linkButton}>
-                  <Link href={'/loginScreen'}>
+                  <Link href={"/loginScreen"}>
                     <Text style={styles.linkText}>
                       Already have an account? Login
                     </Text>
@@ -200,10 +199,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 25,
-  
-    alignContent:'center',
-    justifyContent:'center'
-  
+
+    alignContent: "center",
+    justifyContent: "center",
   },
   ImageContainer: {
     padding: 5,
@@ -223,23 +221,23 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 30,
   },
   form: {
-    width: '100%',
+    width: "100%",
   },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
     paddingHorizontal: 15,
     marginBottom: 15,
   },
   error: {
-    color: 'red',
+    color: "red",
     fontSize: 12,
     marginBottom: 10,
   },
@@ -251,7 +249,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   googleButton: {
-    backgroundColor: '#DB4437',
+    backgroundColor: "#DB4437",
     padding: 15,
     borderRadius: 8,
     marginBottom: 15,
@@ -265,10 +263,10 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   linkText: {
-    color: 'black',
-    textAlign: 'center',
+    color: "black",
+    textAlign: "center",
     fontFamily: "Merriweather-Light",
   },
 });
 
-export default SignupScreen; 
+export default SignupScreen;

@@ -10,6 +10,7 @@ import {
 import React, { useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import DraggableFlatList from "react-native-draggable-flatlist";
+import { router } from "expo-router";
 
 const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
   droppedTiles.forEach((tile) => {
@@ -162,7 +163,7 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
                 </View>
               </TouchableOpacity>
             </View>
-            <View style={styles.expandedMain}>
+            <TouchableOpacity onPress={()=>router.navigate('/(main)/assetScreen')} style={styles.expandedMain}>
               <Animated.View
                 style={[
                   styles.expandedContainer,
@@ -196,7 +197,7 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
                   {item.title} {item.title2}
                 </Text>
               </Animated.View>
-            </View>
+            </TouchableOpacity>
           </Animated.View>
           </View>
         )}

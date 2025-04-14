@@ -10,6 +10,7 @@ import {
 import React, { useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import DraggableFlatList from "react-native-draggable-flatlist";
+import { router } from "expo-router";
 
 const DroppedAnalyticsCard = ({
   setAnalyticsDroppedTiles,
@@ -159,7 +160,7 @@ const DroppedAnalyticsCard = ({
               </View>
               </TouchableOpacity>
              </View>
-
+             <TouchableOpacity  onPress={()=>router.navigate('/(main)/assetScreen')} >
               <Animated.View
               style={[
                 styles.expandedContainer,
@@ -190,6 +191,7 @@ const DroppedAnalyticsCard = ({
                 />
               </View>
             </Animated.View>
+            </TouchableOpacity>
             </Animated.View>
             </View>
           );

@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL, AUTH_TOKEN_KEY } from '@env';
 import Toast from 'react-native-toast-message';
 
-console.log('api url is here' , API_URL , AUTH_TOKEN_KEY)
+console.log('api url is here ----->' , API_URL , AUTH_TOKEN_KEY)
 
 // Create axios instance
 const api = axios.create({
@@ -11,7 +11,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  // timeout: 15000, // 15 seconds timeout
+  timeout: 15000, // 15 seconds timeout
 });
 
 
@@ -22,6 +22,7 @@ api.interceptors.request.use(
       const token = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        console.log('token is here ---->' , token)
       }
       return config;
     } catch (error) {
@@ -88,12 +89,14 @@ export const tilesAPI = {
 // Posts API
 export const postsAPI = {
   createPost: (postData) => {
+    console.log('postdata is here from aoi--->' , postData.category , postData.text , postData.file.uri )
     const formData = new FormData();
     formData.append('category', postData.category);
     formData.append('text', postData.text);
     if (postData.file) {
-      formData.append('file', postData.file);
+      formData.append('file', postData.file.uri);
     }
+    console.log('form data is here--->' , formData)
     return api.post('/posts', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',

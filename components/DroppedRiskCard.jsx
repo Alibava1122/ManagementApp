@@ -11,6 +11,7 @@ import {
 import React, { useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import DraggableFlatList from "react-native-draggable-flatlist";
+import { router } from "expo-router";
 const { width } = Dimensions.get("window");
 
 const DroppedRiskCard = ({ setDroppedRiskTiles, droppedRiskTiles }) => {
@@ -178,6 +179,7 @@ const DroppedRiskCard = ({ setDroppedRiskTiles, droppedRiskTiles }) => {
                 </TouchableOpacity>
               </View>
 
+              <TouchableOpacity  onPress={()=>router.navigate('/(main)/assetScreen')} >
               <Animated.View
                 style={[
                   styles.expandedContainer,
@@ -213,6 +215,7 @@ const DroppedRiskCard = ({ setDroppedRiskTiles, droppedRiskTiles }) => {
                 </Text> */}
                  </View>
               </Animated.View>
+              </TouchableOpacity>
             </Animated.View>
             </View>
           );

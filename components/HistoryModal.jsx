@@ -8,14 +8,21 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { router } from "expo-router";
-import { AntDesign, Feather, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign, } from "@expo/vector-icons";
+import { useChat } from "../context/ChatContext";
 
 const { width } = Dimensions.get("window");
 
-const HistoryModal = ({ isHistoryModalVisible, setIsHistoryModalVisible }) => {
+
+const HistoryModal = ({
+  isHistoryModalVisible,
+  setIsHistoryModalVisible,
+  conversations,
+}) => {
   const slideAnim = new Animated.Value(-width * 0.7);
+  const { setCurrentSessionId } = useChat();
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -24,77 +31,6 @@ const HistoryModal = ({ isHistoryModalVisible, setIsHistoryModalVisible }) => {
       useNativeDriver: true,
     }).start();
   }, [isHistoryModalVisible]);
-
-  const ChatMessage = [
-    {
-      id: 1,
-      chat: "Hello! How are you doing today?",
-    },
-    {
-      id: 2,
-      chat: "Just finished a workout.",
-    },
-    {
-      id: 3,
-      chat: "Did you see the latest episode.",
-    },
-    {
-      id: 4,
-      chat: "I need a coffee ASAP.",
-    },
-    {
-      id: 5,
-      chat: "What are your weekend plans?",
-    },
-    {
-      id: 6,
-      chat: "Working on a new project.",
-    },
-    {
-      id: 7,
-      chat: "Just read an amazing book.",
-    },
-    {
-      id: 8,
-      chat: "Let's meet up later for dinner.",
-    },
-    {
-      id: 9,
-      chat: "Coding late into the night again!",
-    },
-    {
-      id: 10,
-      chat: "Life is an adventure!",
-    },
-    {
-      id: 11,
-      chat: "Just read an amazing book.",
-    },
-    {
-      id: 12,
-      chat: "Let's meet up later for dinner.",
-    },
-    {
-      id: 13,
-      chat: "Coding late into the night again!",
-    },
-    {
-      id: 14,
-      chat: "Life is an adventur.",
-    },
-    {
-      id: 15,
-      chat: "Let's meet up later for dinner.",
-    },
-    {
-      id: 16,
-      chat: "Coding late into the.",
-    },
-    {
-      id: 17,
-      chat: "Life is an adventure.",
-    },
-  ];
 
   return (
     <>
@@ -122,15 +58,27 @@ const HistoryModal = ({ isHistoryModalVisible, setIsHistoryModalVisible }) => {
               <Text style={styles.text}>Chats</Text>
             </View>
 
-            
-              <ScrollView style={styles.listContainer}>
-                {ChatMessage.map((chat, index) => (
-                  <View key={chat.id} style={styles.historyTextContainer}>
-                    <Text style={styles.historytext}>{chat.chat}</Text>
-                  </View>
-                ))}
-              </ScrollView>
-           
+            <ScrollView style={styles.listContainer}>
+              {Object.entries(conversations).map(([sessionId, msgs]) => {
+                const firstUserMsg = msgs.find((msg) => msg.isFromUser);
+                if (!firstUserMsg) return null;
+
+                return (
+                  <TouchableOpacity
+                    key={sessionId}
+                    style={styles.historyTextContainer}
+                    onPress={() => {
+                      setCurrentSessionId(sessionId);
+                      setIsHistoryModalVisible(false);
+                    }}
+                  >
+                    <Text style={styles.historytext} numberOfLines={1}>
+                      {firstUserMsg.message}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
           </Animated.View>
         </View>
       )}
@@ -201,14 +149,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 10,
     justifyContent: "center",
-    borderRadius:12,
-    backgroundColor:'#F5F5F5',
-    marginBottom:3
+    borderRadius: 12,
+    backgroundColor: "#F5F5F5",
+    marginBottom: 3,
   },
   historytext: {
     fontSize: 15,
     color: "#404040",
-    fontWeight:500,
-    
+    fontWeight: 500,
   },
 });

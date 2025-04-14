@@ -35,6 +35,7 @@ export const PostsProvider = ({ children }) => {
   };
 
   const createPost = async (postData) => {
+    
     try {
       setLoading(true);
       setError(null);

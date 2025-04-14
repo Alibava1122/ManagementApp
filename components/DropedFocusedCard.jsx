@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import DraggableFlatList from "react-native-draggable-flatlist";
+import { router } from "expo-router";
 
 const DropedFocusedCard = ({  
   DroppedFocusedSecond,
@@ -163,8 +164,10 @@ const DropedFocusedCard = ({
           
 
             {/* Expandable Section */}
+           
 
-            <Animated.View
+           <TouchableOpacity  onPress={()=>router.navigate('/(main)/assetScreen')} >
+           <Animated.View
               style={[
                 styles.expandedContainer,
                 { backgroundColor: item.colorCode },
@@ -198,6 +201,7 @@ const DropedFocusedCard = ({
                 {item.title} {item.title2}
               </Text>
             </Animated.View>
+           </TouchableOpacity>
           </Animated.View>
           </View>
         )}

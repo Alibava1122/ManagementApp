@@ -8,27 +8,28 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // Check if user is logged in on app start
-  // useEffect(() => {
-  //   checkUserLoggedIn();
-  // }, []);
+  
 
 
-  // const checkUserLoggedIn = async () => {
-  //   try {
-  //     const token = await getAuthToken();
-  //     if (token) {
-  //       const response = await authAPI.getMe();
-  //       setUser(response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error checking auth status:', error);
-  //     await setAuthToken(null);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  useEffect(() => {
+    checkUserLoggedIn();
+  }, []);
+
+
+  const checkUserLoggedIn = async () => {
+    try {
+      const token = await getAuthToken();
+      if (token) {
+        const response = await authAPI.getMe();
+        setUser(response.data);
+      }
+    } catch (error) {
+      console.error('Error checking auth status:', error);
+      await setAuthToken(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const register = async (userData) => {
     try {
@@ -53,7 +54,6 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       const response = await authAPI.login(credentials);
-      console.log('response 2 is here' , response)
       await setAuthToken(response.data.token);
       setUser(response.data);
       return response.data;

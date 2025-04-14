@@ -5,45 +5,46 @@ import { useAuth } from './AuthContext';
 const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
-  const [messages, setMessages] = useState([]);
+  const [conversations, setConversations] = useState({});
+  const [currentSessionId, setCurrentSessionId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchChatHistory();
+    if (isAuthenticated && !currentSessionId) {
+      startNewSession();
     }
   }, [isAuthenticated]);
 
-  const fetchChatHistory = async (page = 1) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await chatAPI.getChatHistory(page);
-      setMessages(page === 1 ? response.data.messages : [...messages, ...response.data.messages]);
-      setCurrentPage(response.data.currentPage);
-      setTotalPages(response.data.totalPages);
-    } catch (error) {
-      setError(error.response?.data?.message || 'Failed to fetch chat history');
-      console.error('Error fetching chat history:', error);
-    } finally {
-      setLoading(false);
-    }
+  const startNewSession = () => {
+    const newSessionId = Date.now().toString();
+    setCurrentSessionId(newSessionId);
+    setConversations(prev => ({
+      ...prev,
+      [newSessionId]: []
+    }));
   };
 
   const sendMessage = async (message) => {
+    if (!currentSessionId) return;
+
     try {
       setLoading(true);
       setError(null);
       const response = await chatAPI.sendMessage(message);
-      setMessages([
-        response.data.aiMessage,
-        response.data.userMessage,
-        ...messages,
-      ]);
+      const userMessage = response.data.userMessage;
+      const aiMessage = response.data.aiMessage;
+
+      setConversations(prev => ({
+        ...prev,
+        [currentSessionId]: [
+          ...(prev[currentSessionId] || []),
+          userMessage,
+          aiMessage
+        ]
+      }));
+
       return response.data;
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to send message');
@@ -53,22 +54,19 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
-  const loadMore = () => {
-    if (!loading && currentPage < totalPages) {
-      fetchChatHistory(currentPage + 1);
-    }
-  };
+  const messages = conversations[currentSessionId] || [];
 
   return (
     <ChatContext.Provider
       value={{
         messages,
+        conversations,
+        currentSessionId,
         loading,
         error,
         sendMessage,
-        loadMore,
-        hasMore: currentPage < totalPages,
-        refresh: () => fetchChatHistory(1),
+        startNewSession,
+        setCurrentSessionId
       }}
     >
       {children}
@@ -84,4 +82,4 @@ export const useChat = () => {
   return context;
 };
 
-export default ChatContext; 
+export default ChatContext;

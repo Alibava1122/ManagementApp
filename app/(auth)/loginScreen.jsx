@@ -34,7 +34,7 @@ const LoginScreen = () => {
           ToastAndroid.CENTER
         );
       }
-      router.navigate("/(tabs)");
+      router.replace('/(tabs)');
     } catch (err) {
       if (Platform.OS === "android") {
         ToastAndroid.showWithGravity(

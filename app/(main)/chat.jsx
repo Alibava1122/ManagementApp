@@ -11,21 +11,32 @@ import React, { useEffect, useState } from "react";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import HistoryModal from "../../components/HistoryModal";
 import { router } from "expo-router";
-
-import DropDowns from "../../components/DropDowns";
+import { useChat } from "../../context/ChatContext";
 
 const Chat = () => {
   const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false);
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
+  // const [messages, setMessages] = useState([]);
+  const { messages, sendMessage , startNewSession, conversations} = useChat();
 
 
-  const handleSendMessage = () => {
+  useEffect(() => {
+    startNewSession();
+  }, []);
+
+  const handleSendMessage = async () => {
+    
     if (message.trim()) {
-      setMessages((prevMessages) => [...prevMessages, message]);
-      setMessage("");
+      try {
+        await sendMessage(message);
+        setMessage("");
+        Keyboard.dismiss();
+      } catch (err) {
+        console.error("Message send failed:", err);
+      }
     }
   };
+ 
 
   return (
     <View style={styles.container}>
@@ -41,7 +52,7 @@ const Chat = () => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.dropDownsContainer}>
+        {/* <View style={styles.dropDownsContainer}>
         <DropDowns   items={[
             { label: "Creative", value: "Creative" },
             { label: "Precise", value: "Precise" },
@@ -53,7 +64,7 @@ const Chat = () => {
             { label: "Assets", value: "Assets" },
             { label: "Real Estate", value: "RealEstate" },
           ]}/>
-        </View>
+        </View> */}
 
         {/* 2nd dropdown */}
 
@@ -65,13 +76,27 @@ const Chat = () => {
           data={messages}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={styles.messageSubContainer}>
-              <View style={styles.messageBox}>
-                <Text style={styles.messageText}>{item}</Text>
+            <View
+              style={[
+                styles.messageSubContainer,
+                item.isFromUser ? styles.userMessage : styles.aiMessage,
+              ]}
+            >
+              <View
+                style={[
+                  styles.messageBox,
+                  item.isFromUser ? styles.userMessageBox : styles.aiMessageBox,
+                ]}
+              >
+                <Text style={[styles.messageText ,
+                item.isFromUser ? styles.userMessageText : styles.aiMessageText,
+
+                ]}>{item.message}</Text>
               </View>
             </View>
           )}
           contentContainerStyle={styles.messagesContainer}
+         
         />
 
         {/* Input Section */}
@@ -98,6 +123,7 @@ const Chat = () => {
       <HistoryModal
         isHistoryModalVisible={isHistoryModalVisible}
         setIsHistoryModalVisible={setIsHistoryModalVisible}
+        conversations={conversations}
       />
     </View>
   );
@@ -189,5 +215,43 @@ const styles = StyleSheet.create({
     marginBottom:7
    
   },
+  messageSubContainer: {
+    marginBottom: 5,
+    marginTop: 4,
+  },
+  
+  userMessage: {
+    alignSelf: "flex-end",
+  },
+  
+  aiMessage: {
+    alignSelf: "flex-start",
+  },
+  
+  messageBox: {
+    padding: 12,
+    borderRadius: 10,
+    maxWidth: "80%",
+  },
+  
+  userMessageBox: {
+    backgroundColor: "#3e8c89", // green bubble
+  },
+  
+  aiMessageBox: {
+    backgroundColor: "#E5E5EA", // iOS-style gray bubble
+  },
+  
+  messageText: {
+    color: "black",
+    fontSize: 16,
+  },
+  userMessageText:{
+    color:'white'
+  },
+  aiMessageText:{
+    color:'black'
+  }
+  
  
 });
