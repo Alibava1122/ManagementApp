@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -12,8 +12,13 @@ import {
 import { useAssets } from "../../context/AssetContext";
 import { router } from "expo-router";
 import ModelTextInput from "../../components/ModelTextInput";
+import { useFocusEffect } from "@react-navigation/native";
+import useToast from "../../hooks/useToast";
+
+
 
 const cashScreen = () => {
+  const { showToast } = useToast();
   const { cashEntries, addCashEntry, deleteCashEntry  ,  fetchAllAssets} = useAssets();
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -23,6 +28,11 @@ const cashScreen = () => {
     amount: "",
     date: "",
   });
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllAssets();
+    }, [])
+  );
 
   const addEntry = () => {
     if (!newEntry.description || !newEntry.amount || !newEntry.date) {
@@ -31,6 +41,7 @@ const cashScreen = () => {
     }
 
     addCashEntry(newEntry);
+    showToast('Added Succesfully');
     setNewEntry({ description: "", amount: "", date: "" });
     setModalVisible(false);
   };
@@ -55,6 +66,7 @@ const cashScreen = () => {
   const handleDelete = () => {
     if (selectedEntry) {
       deleteCashEntry(selectedEntry._id);
+      showToast('Deleted Succesfully');
       fetchAllAssets();
       setConfirmModalVisible(false);
       setSelectedEntry(null);
@@ -71,7 +83,7 @@ const cashScreen = () => {
         onPress={() => setModalVisible(true)}
       >
         <Text style={styles.buttonText}>Add New Entry</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> 
       {cashEntries.length > 0 && (
         <View style={styles.propertiesList}>
           <Text style={styles.subtitle}>Cash Entries</Text>
@@ -83,6 +95,7 @@ const cashScreen = () => {
                 router.push({
                   pathname: "/cash-details",
                   params: {
+                    id:entry._id,
                     description: entry.description,
                     amount: entry.amount,
                     date: entry.date,

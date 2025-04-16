@@ -1,16 +1,56 @@
-import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { View, Text, StyleSheet, ScrollView, Dimensions, Modal , TouchableOpacity } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
 import { BarChart } from "react-native-chart-kit";
+import ModelTextInput from '../../components/ModelTextInput'; 
+import { useEffect, useState } from "react";
+import { Feather } from "@expo/vector-icons";
+import { useAssets } from "../../context/AssetContext";
+import useToast from "../../hooks/useToast";
 
 const StockDetailScreen = () => {
+  const { showToast } = useToast();
   const params = useLocalSearchParams(); 
+  const { updateStock } = useAssets();
+  const [newStock, setNewStock] = useState({
+    symbol: "",
+    quantity: "",
+    purchasePrice: "",
+    purchaseDate: "",
+  });
+  const [modalVisible, setModalVisible] = useState(false);
 
   const chartData = {
     labels: ["Price"],
     datasets: [{ data: [parseFloat(params.purchasePrice) || 0] }],
   };
 
+  const handleUpdateStock = async () => {
+    const updatedStock = {
+      symbol: newStock.symbol || params.symbol,
+      quantity: newStock.quantity || params.quantity,
+      purchasePrice: newStock.purchasePrice || params.purchasePrice,
+      purchaseDate: newStock.purchaseDate || params.purchaseDate,
+    };
+  
+    await updateStock(params.id, updatedStock);
+    showToast('Updated');
+    router.back()
+  
+    setModalVisible(false);
+  };
+  useEffect(() => {
+    if (modalVisible) {
+      setNewStock({
+        symbol: params.symbol,
+        quantity: params.quantity,
+        purchasePrice: params.purchasePrice,
+        purchaseDate: params.purchaseDate.slice(0,10),
+      });
+    }
+  }, [modalVisible]);
+
   return (
+    <>
     <ScrollView style={styles.container}>
       <Text style={styles.title}>{params.symbol.toUpperCase()} STOCK DETAIL</Text>
 
@@ -35,6 +75,10 @@ const StockDetailScreen = () => {
 
       {/* Stock Details */}
       <View style={styles.detailCard}>
+      <TouchableOpacity onPress={()=>setModalVisible(true)} style={styles.editIcon}>
+      <Text style={styles.EditText}>Edit</Text>
+      <Feather name="edit" size={20} color="black" />
+          </TouchableOpacity>
         <Text style={styles.detailText}>Quantity: {params.quantity}</Text>
         <Text style={styles.detailText}>
           Purchase Price: ${params.purchasePrice}
@@ -42,6 +86,67 @@ const StockDetailScreen = () => {
         <Text style={styles.detailText}>Purchase Date: {params.purchaseDate.slice(0,10)}</Text>
       </View>
     </ScrollView>
+
+    <Modal visible={modalVisible} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.subtitle}>Update Stock</Text>
+            <ModelTextInput
+              label="Stock Symbol"
+              placeholder="e.g., AAPL"
+              value={newStock.symbol || params.symbol}
+              onChangeText={(text) =>
+                setNewStock({ ...newStock, symbol: text })
+              }
+            />
+
+            <ModelTextInput
+              label="Quantity"
+              placeholder="Enter Quantity"
+              value={newStock.quantity || params.quantity}
+              onChangeText={(text) =>
+                setNewStock({ ...newStock, quantity: text })
+              }
+              keyboardType="numeric"
+            />
+
+            <ModelTextInput
+              label="Purchase Price"
+              placeholder="Enter Purchase Price"
+              value={newStock.purchasePrice ||params.purchasePrice}
+              onChangeText={(text) =>
+                setNewStock({ ...newStock, purchasePrice: text })
+              }
+              keyboardType="numeric"
+            />
+
+            <ModelTextInput
+              label="Purchase Date"
+              placeholder="YYYY-MM-DD"
+              value={newStock.purchaseDate.slice(0,10) || params.purchaseDate.slice(0,10)}
+              onChangeText={(text) =>
+                setNewStock({ ...newStock, purchaseDate: text })
+              }
+            />
+            <TouchableOpacity
+            onPress={handleUpdateStock}
+              style={styles.addButton}
+              
+             
+            >
+              <Text style={styles.buttonText}>Update</Text>
+             
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
@@ -70,6 +175,46 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
   },
   detailText: { fontSize: 16, marginBottom: 10 , color:'black' },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "90%",
+    alignItems: "center",
+  },
+  subtitle: { fontSize: 18, fontWeight: "bold", marginBottom: 15 },
+  addButton: {
+    backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 8,
+    width: "100%",
+    alignItems: "center",
+  },
+  buttonText: { color: "#fff", textAlign: "center", fontWeight: "bold" },
+  closeButton: {
+    marginTop: 10,
+    backgroundColor: "#FF3B30",
+    padding: 10,
+    borderRadius: 8,
+    width: "100%",
+    alignItems: "center",
+  },
+  closeButtonText: { color: "#fff", fontWeight: "bold" },
+  editIcon: {
+    width: "100%",
+    flexDirection: "row",
+    alignContent: "flex-end",
+    justifyContent: "flex-end",
+  },
+  EditText: {
+    marginRight: 5,
+  },
 });
 
 export default StockDetailScreen;

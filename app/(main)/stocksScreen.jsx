@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -13,12 +13,13 @@ import {
 import axios from "axios";
 import { Dimensions } from "react-native";
 import { useAssets } from "../../context/AssetContext";
-import { useRouter } from "expo-router";
-import ModelTextInput from '../../components/ModelTextInput';
-
+import { useFocusEffect, useRouter } from "expo-router";
+import ModelTextInput from "../../components/ModelTextInput";
+import useToast from "../../hooks/useToast";
 
 const StocksScreen = () => {
-  const { stocks, addStock, deleteStock , fetchAllAssets } = useAssets();
+  const { showToast } = useToast();
+  const { stocks, addStock, deleteStock, fetchAllAssets } = useAssets();
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [newStock, setNewStock] = useState({
@@ -55,16 +56,16 @@ const StocksScreen = () => {
 
     setLoading(true);
     const stockData = await fetchStockData(newStock.symbol);
-    console.log('stock symbol name' , stockData)
+    console.log("stock symbol name", stockData);
     setLoading(false);
     if (!stockData) {
       Alert.alert("Error", "Invalid stock symbol");
       return;
     }
 
-
     const response = await addStock({ ...newStock });
-    
+    showToast('Added Successfully');
+
     setNewStock({
       symbol: "",
       quantity: "",
@@ -81,18 +82,21 @@ const StocksScreen = () => {
     setConfirmModalVisible(true);
   };
 
-  const handleDelete = async() => {
+  const handleDelete = async () => {
     if (selectedEntry) {
-
-      const response =await deleteStock(selectedEntry._id);
-      fetchAllAssets(); 
+      const response = await deleteStock(selectedEntry._id);
+      showToast('Deleted');
+      fetchAllAssets();
 
       setConfirmModalVisible(false);
       setSelectedEntry(null);
     }
   };
-
-
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllAssets();
+    }, [])
+  );
 
   return (
     <ScrollView style={styles.container}>
@@ -169,7 +173,7 @@ const StocksScreen = () => {
       {stocks.length > 0 && (
         <View style={styles.stocksList}>
           <Text style={styles.subtitle}>Your Stocks</Text>
-          {stocks.map((stock , index) => (
+          {stocks.map((stock, index) => (
             <TouchableOpacity
               key={stock.id || index}
               style={styles.stockItem}
@@ -177,6 +181,7 @@ const StocksScreen = () => {
                 router.push({
                   pathname: "/stocks-details",
                   params: {
+                    id: stock._id,
                     symbol: stock.symbol,
                     quantity: stock.quantity,
                     purchasePrice: stock.purchasePrice,
@@ -191,7 +196,7 @@ const StocksScreen = () => {
                   Quantity: {stock.quantity} | Bought: ${stock.purchasePrice}
                 </Text>
                 <Text style={styles.stockDate}>
-                  Purchased: {stock.purchaseDate.slice(0,10)}
+                  Purchased: {stock.purchaseDate.slice(0, 10)}
                 </Text>
               </View>
               <TouchableOpacity

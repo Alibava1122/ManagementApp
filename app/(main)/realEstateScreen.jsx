@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Dimensions } from 'react-native';
 import { useAssets } from '../../context/AssetContext';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import ModelTextInput from '../../components/ModelTextInput';
 
 const RealEstateScreen = () => {
@@ -19,7 +19,7 @@ const RealEstateScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
-  const [newProperty, setNewProperty] = useState({
+  const [newProperty, setNewProperty] = useState({ 
     name: '',
     address: '',
     purchasePrice: '',
@@ -39,6 +39,7 @@ const RealEstateScreen = () => {
     try {
       const response = await addProperty({ ...newProperty });
       console.log('Property added:', response);
+      showToast('Added Sucessfully');
     } catch (error) {
       console.error('Error adding property:', error);
       Alert.alert('Error', 'Something went wrong while adding the property.');
@@ -64,12 +65,18 @@ const RealEstateScreen = () => {
   const handleDelete = () => {
     if (selectedEntry) {
       deleteProperty(selectedEntry._id);
+      showToast('Deleted');
       fetchAllAssets();
       setConfirmModalVisible(false);
       setSelectedEntry(null);
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllAssets();
+    }, [])
+  );
 
   return (
     <ScrollView style={styles.container}>
@@ -90,6 +97,7 @@ const RealEstateScreen = () => {
             <TouchableOpacity key={property.id || index} style={styles.propertyItem} onPress={() => router.push({
               pathname: "/realEstate-Detail",
               params: {
+                id:property._id,
                 name: property.name,
                 address: property.address,
                 purchasePrice: property.purchasePrice,
@@ -181,7 +189,7 @@ const RealEstateScreen = () => {
                 style={[styles.modalButton, styles.saveButton]}
                 onPress={handleAddProperty}
               >
-                <Text style={styles.buttonText}>Save</Text>
+                <Text style={styles.buttonText}>add</Text>
               </TouchableOpacity>
             </View>
           </View>

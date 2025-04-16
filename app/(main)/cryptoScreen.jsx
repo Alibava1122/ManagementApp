@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   View,
   Text,
@@ -12,9 +12,11 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { useAssets } from '../../context/AssetContext';  
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import ModelTextInput from '../../components/ModelTextInput';
+import useToast from '../../hooks/useToast';
 const CryptoScreen = () => {
+  const { showToast } = useToast();
   const { cryptos, addCrypto, deleteCrypto , fetchAllAssets } = useAssets(); 
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -56,6 +58,7 @@ const CryptoScreen = () => {
 
     addCrypto({ ...newCrypto }); 
     setNewCrypto({ symbol: '', quantity: '', purchasePrice: '', purchaseDate: '' });
+    showToast('New Crypto added');
     setModalVisible(false);
   };
   const confirmDelete = (crypto) => {
@@ -66,11 +69,18 @@ const CryptoScreen = () => {
   const handleDelete = () => {
     if (selectedEntry) {
       deleteCrypto(selectedEntry._id);
+      showToast('Deleted');
       fetchAllAssets();
       setConfirmModalVisible(false);
       setSelectedEntry(null);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllAssets();
+    }, [])
+  );
 
   return (
     <ScrollView style={styles.container}>

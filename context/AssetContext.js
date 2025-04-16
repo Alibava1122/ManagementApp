@@ -253,19 +253,83 @@ export const AssetProvider = ({ children }) => {
   };
 
   const updateCrypto = async (updatedCrypto) => {
-    const newCryptos = cryptos.map(crypto => 
-      crypto.id === updatedCrypto.id ? updatedCrypto : crypto
-    );
-    setCryptos(newCryptos);
-    await storeData('cryptos', newCryptos);
+    try {
+      const response = await cryptoAPI.updateCrypto(updatedCrypto.id, updatedCrypto);
+      const updated = response.data;
+  
+      setCryptos((prev) =>
+        prev.map((crypto) => (crypto.id === updated.id ? updated : crypto))
+      );
+  
+      await storeData('cryptos', cryptos);
+  
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Crypto updated successfully',
+      });
+  
+      return updated;
+    } catch (error) {
+      console.error('Update crypto error:', error?.response?.data || error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to update crypto',
+      });
+      return null;
+    }
+  };
+  const updateProperty = async (updatedProperty) => {
+    try {
+      const response = await realEstateAPI.updateProperty(updatedProperty.id, updatedProperty);
+      const updated = response.data;
+  
+      setProperties((prev) =>
+        prev.map((property) => (property.id === updated.id ? updated : property))
+      );
+  
+      await storeData('properties', properties);
+  
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Property updated successfully',
+      });
+  
+      return updated;
+    } catch (error) {
+      console.error('Update property error:', error?.response?.data || error.message);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to update property',
+      });
+      return null;
+    }
   };
 
-  const updateProperty = async (updatedProperty) => {
-    const newProperties = properties.map(property => 
-      property.id === updatedProperty.id ? updatedProperty : property
-    );
-    setProperties(newProperties);
-    await storeData('properties', newProperties);
+  const updateCashEntry = async (id, updatedEntry) => {
+    try {
+      const response = await cashAPI.updateCashEntry(id, updatedEntry);
+      setCashEntries(
+        cashEntries.map((entry) =>
+          entry.id === id ? response.data : entry
+        )
+      );
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Cash entry updated successfully',
+      });
+      return response.data;
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to update cash entry',
+      });
+    }
   };
 
   return (
@@ -285,6 +349,9 @@ export const AssetProvider = ({ children }) => {
         deleteProperty,
         deleteCashEntry,
         updateStock,
+        updateCashEntry,
+        updateCrypto,
+        updateProperty,
         calculateTotalAssets,
         fetchAllAssets,
       }}
