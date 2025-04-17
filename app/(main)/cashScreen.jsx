@@ -15,11 +15,10 @@ import ModelTextInput from "../../components/ModelTextInput";
 import { useFocusEffect } from "@react-navigation/native";
 import useToast from "../../hooks/useToast";
 
-
-
 const cashScreen = () => {
   const { showToast } = useToast();
-  const { cashEntries, addCashEntry, deleteCashEntry  ,  fetchAllAssets} = useAssets();
+  const { cashEntries, addCashEntry, deleteCashEntry, fetchAllAssets } =
+    useAssets();
   const [modalVisible, setModalVisible] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
@@ -41,7 +40,7 @@ const cashScreen = () => {
     }
 
     addCashEntry(newEntry);
-    showToast('Added Succesfully');
+    showToast("Added Succesfully");
     setNewEntry({ description: "", amount: "", date: "" });
     setModalVisible(false);
   };
@@ -66,7 +65,7 @@ const cashScreen = () => {
   const handleDelete = () => {
     if (selectedEntry) {
       deleteCashEntry(selectedEntry._id);
-      showToast('Deleted Succesfully');
+      showToast("Deleted Succesfully");
       fetchAllAssets();
       setConfirmModalVisible(false);
       setSelectedEntry(null);
@@ -74,134 +73,150 @@ const cashScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {/* <Text style={styles.title}>Cash Portfolio</Text> */}
-      {renderCashChart()}
+    <>
 
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.buttonText}>Add New Entry</Text>
-      </TouchableOpacity> 
-      {cashEntries.length > 0 && (
-        <View style={styles.propertiesList}>
-          <Text style={styles.subtitle}>Cash Entries</Text>
-          {cashEntries.map((entry , index) => (
-            <TouchableOpacity
-              key={entry.id || index}
-              style={styles.propertyItem}
-              onPress={() =>
-                router.push({
-                  pathname: "/cash-details",
-                  params: {
-                    id:entry._id,
-                    description: entry.description,
-                    amount: entry.amount,
-                    date: entry.date,
-                  },
-                })
-              }
-            >
-              <View style={styles.propertyInfo}>
-                <Text style={styles.propertyName}>{entry.description}</Text>
-                <Text style={styles.propertyDetails}>
-                  Amount: ${entry.amount}
-                </Text>
-                <Text style={styles.propertyDetails}>Date: {entry?.date.slice(0,10)}</Text>
+      <View style={styles.floatingContainer}>
+        <TouchableOpacity
+          onPress={() => router.navigate("/chat")}
+          style={styles.floatingContainer}
+        >
+          <View style={styles.floatingText}>
+            <Text style={styles.floatText}>ANDORSE AI</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <ScrollView style={styles.container}>
+        {/* <Text style={styles.title}>Cash Portfolio</Text> */}
+        {renderCashChart()}
+
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.buttonText}>Add New Entry</Text>
+        </TouchableOpacity>
+        {cashEntries.length > 0 && (
+          <View style={styles.propertiesList}>
+            <Text style={styles.subtitle}>Cash Entries</Text>
+            {cashEntries.map((entry, index) => (
+              <TouchableOpacity
+                key={entry.id || index}
+                style={styles.propertyItem}
+                onPress={() =>
+                  router.push({
+                    pathname: "/cash-details",
+                    params: {
+                      id: entry._id,
+                      description: entry.description,
+                      amount: entry.amount,
+                      date: entry.date,
+                    },
+                  })
+                }
+              >
+                <View style={styles.propertyInfo}>
+                  <Text style={styles.propertyName}>{entry.description}</Text>
+                  <Text style={styles.propertyDetails}>
+                    Amount: ${entry.amount}
+                  </Text>
+                  <Text style={styles.propertyDetails}>
+                    Date: {entry?.date.slice(0, 10)}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => confirmDelete(entry)}
+                >
+                  <Text style={styles.deleteButtonText}>Delete</Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Add Cash Entry</Text>
+              <ModelTextInput
+                label="Description"
+                placeholder="Enter description"
+                value={newEntry.description}
+                onChangeText={(text) =>
+                  setNewEntry({ ...newEntry, description: text })
+                }
+              />
+
+              <ModelTextInput
+                label="Amount"
+                placeholder="Enter amount"
+                value={newEntry.amount}
+                onChangeText={(text) =>
+                  setNewEntry({ ...newEntry, amount: text })
+                }
+                keyboardType="numeric"
+              />
+
+              <ModelTextInput
+                label="Date"
+                placeholder="YYYY-MM-DD"
+                value={newEntry.date}
+                onChangeText={(text) =>
+                  setNewEntry({ ...newEntry, date: text })
+                }
+              />
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.saveButton]}
+                  onPress={addEntry}
+                >
+                  <Text style={styles.buttonText}>Save</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => confirmDelete(entry)}
-              >
-                <Text style={styles.deleteButtonText}>Delete</Text>
-              </TouchableOpacity>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add Cash Entry</Text>
-            <ModelTextInput
-              label="Description"
-              placeholder="Enter description"
-              value={newEntry.description}
-              onChangeText={(text) =>
-                setNewEntry({ ...newEntry, description: text })
-              }
-              
-            />
-
-            <ModelTextInput
-              label="Amount"
-              placeholder="Enter amount"
-              value={newEntry.amount}
-              onChangeText={(text) =>
-                setNewEntry({ ...newEntry, amount: text })
-              }
-              keyboardType="numeric"
-            />
-
-            <ModelTextInput
-              label="Date"
-              placeholder="YYYY-MM-DD"
-              value={newEntry.date}
-              onChangeText={(text) => setNewEntry({ ...newEntry, date: text })}
-            />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.saveButton]}
-                onPress={addEntry}
-              >
-                <Text style={styles.buttonText}>Save</Text>
-              </TouchableOpacity>
             </View>
           </View>
-        </View>
-      </Modal>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={confirmModalVisible}
-        onRequestClose={() => setConfirmModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Confirm Deletion</Text>
-            <Text style={styles.modalText}>
-              Are you sure you want to delete this entry?
-            </Text>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setConfirmModalVisible(false)}
-              >
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.saveButton]}
-                onPress={handleDelete}
-              >
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={confirmModalVisible}
+          onRequestClose={() => setConfirmModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Confirm Deletion</Text>
+              <Text style={styles.modalText}>
+                Are you sure you want to delete this entry?
+              </Text>
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={() => setConfirmModalVisible(false)}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.saveButton]}
+                  onPress={handleDelete}
+                >
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </ScrollView>
+        </Modal>
+      </ScrollView>
+    </>
   );
 };
 
@@ -347,6 +362,35 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: "#007AFF",
+  },
+  floatingContainer: {
+    width: "100%",
+    position: "absolute",
+    bottom: 0,
+    alignSelf: "center",
+    zIndex: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    paddingVertical: 5,
+  },
+  floatingText: {
+    width: "80%",
+    height: 55,
+    backgroundColor: "#baf4ed",
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  floatText: {
+    color: "black",
+    fontSize: 17,
+    fontFamily: "Merriweather-Bold",
   },
 });
 

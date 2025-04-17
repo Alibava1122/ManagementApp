@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,19 +10,33 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { AntDesign, Feather } from "@expo/vector-icons";
+import { useTopics } from "../../context/TopicContext";
 
 export default function Community() {
   const router = useRouter();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [topic, setTopic] = useState("");
+  const [topicInput, setTopicInput] = useState("");
 
-  const [topics, setTopics] = useState([]);
+  const {
+    topics,
+    fetchTopics,
+    addTopic,
+    loading,
+  } = useTopics();
 
-  const handleAddTopic = () => {
-    if (topic.trim()) {
-      setTopics([...topics, topic]); 
-      setTopic("");
-      setIsModalVisible(false);
+  useEffect(() => {
+    fetchTopics(); // fetch topics on mount
+  }, []);
+
+  const handleAddTopic = async () => {
+    if (topicInput.trim()) {
+      try {
+        await addTopic({ title: topicInput });
+        setTopicInput("");
+        setIsModalVisible(false);
+      } catch (err) {
+        // Error already handled in context with toast
+      }
     }
   };
 
@@ -46,13 +60,11 @@ export default function Community() {
             onPress={() =>
               router.push({
                 pathname: "/communityPostsScreen",
-                params: {
-                  title: item,
-                },
+                params: { title: item.title }
               })
             }
           >
-            <Text style={styles.buttonText}>{item}</Text>
+           <Text style={styles.buttonText}>{item.title}</Text>
           </TouchableOpacity>
         )}
       />
@@ -83,8 +95,8 @@ export default function Community() {
               style={styles.input}
               placeholder="Add topic..."
               placeholderTextColor="#888"
-              value={topic}
-              onChangeText={setTopic}
+              value={topicInput}
+              onChangeText={setTopicInput}
             />
             <TouchableOpacity style={styles.addButton} onPress={handleAddTopic}>
               <Text style={styles.addButtonText}>Add</Text>

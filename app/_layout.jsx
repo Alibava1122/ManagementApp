@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider, useAuth } from "../context/AuthContext"; // Import useAuth hook
 import { ChatProvider } from "../context/ChatContext";
 import { PostsProvider } from "../context/PostsContext";
+import { TopicProvider } from "../context/TopicContext";
 
 const RootLayoutContent = () => {
   const { user } = useAuth();  // Get the user from AuthContext
@@ -32,9 +33,11 @@ const RootLayout = () => {
     <AuthProvider>
       <AssetProvider>
         <ChatProvider>
+          <TopicProvider>
           <PostsProvider>
           <RootLayoutContent />
           </PostsProvider>
+          </TopicProvider>
         </ChatProvider>
       </AssetProvider>
     </AuthProvider>

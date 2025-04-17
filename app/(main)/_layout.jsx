@@ -13,7 +13,7 @@ const _layout = () => {
     <Stack.Screen name='stocksScreen' options={{ title:'Stocks Portfolio' ,headerShown:true}}/>
     <Stack.Screen name='cashScreen' options={{title:'Cash Portfolio' , headerShown:true}}/>
     <Stack.Screen name='RealEstateScreen' options={{ title:'Real-Estate Portfolio' , headerShown:false}}/>
-    <Stack.Screen name='assetScreen' options={{title:'Aseets Deatils' ,headerShown:true}}/>
+    <Stack.Screen name='assetScreen' options={{title:'Aseets Details' ,headerShown:true}}/>
     <Stack.Screen name='cash-details' options={{ title:'Cash Deatils',headerShown:true}}/>
     <Stack.Screen name='crypto-details' options={{ title:'Crypto Deatils' , headerShown:true}}/>
     <Stack.Screen name='stocks-details' options={{title:'Stocks Deatils' ,headerShown:true}}/>

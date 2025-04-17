@@ -8,6 +8,14 @@ const assetScreen = () => {
   const { calculateTotalAssets } = useAssets(); 
   const { stocksTotal, cryptosTotal, propertiesTotal, cashTotal} = calculateTotalAssets();
   return (
+    <> 
+    <View  style={styles.floatingContainer}>
+    <TouchableOpacity onPress={()=>router.navigate("/chat")} style={styles.floatingContainer}>
+      <View style={styles.floatingText}>
+        <Text style={styles.floatText}>ANDORSE AI</Text>
+      </View>
+    </TouchableOpacity>
+    </View>
     <ScrollView style={styles.container}>
       <View style={styles.HeadTitleContainer}>
       <Image
@@ -40,10 +48,11 @@ const assetScreen = () => {
         totalValue={cryptosTotal}
         onPress={() => router.navigate("/cryptoScreen")}
       />
-      <View style={{marginBottom:30}}>
+      <View style={{marginBottom:80}}>
 
       </View>
     </ScrollView>
+    </>
   );
 };
 
@@ -73,5 +82,34 @@ const styles = StyleSheet.create({
     marginBottom:20,
     flexDirection:'row',
    
-  }
+  },
+  floatingContainer: {
+    width: "100%",
+    position: "absolute",
+    bottom: 0,
+    alignSelf: "center",
+    zIndex: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    paddingVertical: 5,
+  },
+  floatingText: {
+    width: "80%",
+    height: 55,
+    backgroundColor: "#baf4ed",
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  floatText: {
+    color: "black",
+    fontSize: 17,
+    fontFamily: "Merriweather-Bold",
+  },
 });

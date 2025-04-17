@@ -79,6 +79,7 @@ const RealEstateScreen = () => {
   );
 
   return (
+    <>
     <ScrollView style={styles.container}>
       {/* <Text style={styles.title}>Real Estate Portfolio</Text> */}
 
@@ -223,6 +224,14 @@ const RealEstateScreen = () => {
         </View>
       </Modal>
     </ScrollView>
+       <View  style={styles.floatingContainer}>
+       <TouchableOpacity onPress={()=>router.navigate("/chat")} style={styles.floatingContainer}>
+         <View style={styles.floatingText}>
+           <Text style={styles.floatText}>ANDORSE AI</Text>
+         </View>
+       </TouchableOpacity>
+       </View>
+       </>
   );
 };
 
@@ -364,6 +373,35 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: '#007AFF',
+  },
+  floatingContainer: {
+    width: "100%",
+    position: "absolute",
+    bottom: 0,
+    alignSelf: "center",
+    zIndex: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    paddingVertical: 5,
+  },
+  floatingText: {
+    width: "80%",
+    height: 55,
+    backgroundColor: "#baf4ed",
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  floatText: {
+    color: "black",
+    fontSize: 17,
+    fontFamily: "Merriweather-Bold",
   },
 });
 

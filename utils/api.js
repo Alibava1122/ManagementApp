@@ -164,6 +164,14 @@ export const stockAPI = {
   updateStock: (id, stockData) => api.put(`/stocks/${id}`, stockData),
 };
 
+// Topic APIs
+export const topicAPI = {
+  getAllTopics: () => api.get('/topics'),
+  addTopic: (topicData) => api.post('/topics', topicData),
+  updateTopic: (id, topicData) => api.put(`/topics/${id}`, topicData),
+  deleteTopic: (id) => api.delete(`/topics/${id}`),
+};
+
 export default api; 
 
 
