@@ -152,7 +152,7 @@ const DroppedRiskCard = ({ setDroppedRiskTiles, droppedRiskTiles }) => {
                   activeOpacity={0.9}
                   style={[
                     styles.RiskTilesContainer,
-                    { backgroundColor: item.colorCode },
+                    // { backgroundColor: item.colorCode },
                   ]}
                 >
                   <View style={styles.RiskimageContainer}>
@@ -183,7 +183,7 @@ const DroppedRiskCard = ({ setDroppedRiskTiles, droppedRiskTiles }) => {
               <Animated.View
                 style={[
                   styles.expandedContainer,
-                  { backgroundColor: item.colorCode },
+                  // { backgroundColor: item.colorCode },
                   {
                     height: item.expandAnim,
                     marginBottom: item.expandAnim.interpolate({
@@ -250,6 +250,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "grey",
     marginBottom: 9,
+    backgroundColor:'white',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   imageRisk: {
     width: 160,
@@ -278,6 +284,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
     borderTopRightRadius: 5,
     borderTopLeftRadius: 5,
+    backgroundColor:'white'
   },
   imageFocused: {
     width: 190,
@@ -296,7 +303,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
-    bottom: -7,
+    bottom: 0,
   },
   iconContainer: {
     width: 27,

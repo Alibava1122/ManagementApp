@@ -134,7 +134,7 @@ const DroppedAnalyticsCard = ({
                 activeOpacity={0.9}
                 style={[
                   styles.largeTileSize,
-                  { backgroundColor: item.colorCode },
+                  // { backgroundColor: item.colorCode },
                 ]}
               >
                 <View>
@@ -164,7 +164,7 @@ const DroppedAnalyticsCard = ({
               <Animated.View
               style={[
                 styles.expandedContainer,
-                { backgroundColor: item.colorCode },
+                // { backgroundColor: item.colorCode },
                 {
                   height: item.expandAnim,
                   marginBottom: item.expandAnim.interpolate({
@@ -226,7 +226,13 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderWidth: 1,
     borderColor: "grey",
-    marginBottom:5
+    marginBottom:5,
+    backgroundColor:'white',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
     
   },
   imageAnalytics: {
@@ -249,7 +255,8 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius:20,
     borderBottomRightRadius:20,
     borderTopRightRadius:5,
-    borderTopLeftRadius:5
+    borderTopLeftRadius:5,
+    backgroundColor:'white'
    
     
   },
@@ -270,7 +277,7 @@ const styles = StyleSheet.create({
     alignItems:'center',
     justifyContent:'center',
     position:'absolute',
-    bottom:-7
+    bottom:-5
   },
   iconContainer:{
     width:27,

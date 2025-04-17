@@ -136,7 +136,7 @@ const DropedFocusedCard = ({
               activeOpacity={0.9}
               style={[
                 styles.FocusedTileContainer,
-                { backgroundColor: item.colorCode },
+                // { backgroundColor: item.colorCode },
               ]}
             >
               <View>
@@ -170,7 +170,7 @@ const DropedFocusedCard = ({
            <Animated.View
               style={[
                 styles.expandedContainer,
-                { backgroundColor: item.colorCode },
+                // { backgroundColor: item.colorCode },
                 {
                   height: item.expandAnim,
                   marginBottom: item.expandAnim.interpolate({
@@ -231,6 +231,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     position:'relative',
+    backgroundColor:'white',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
     // marginTop:15
   },
   deleteButton: {
@@ -259,6 +265,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     paddingHorizontal: 10,
     paddingVertical: 5,
+    backgroundColor:'white',
     // width: "100%",
    
     
@@ -291,13 +298,12 @@ const styles = StyleSheet.create({
     position:'absolute',
     bottom:-7
   },
-  iconContainer:{
-    width:27,
-    height:27,
-    backgroundColor:'white',
-    alignItems:'center',
-    justifyContent:'center',
-    borderRadius:30
-    
+  iconContainer: {
+    width: 27,
+    height: 27,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30,
   }
 });

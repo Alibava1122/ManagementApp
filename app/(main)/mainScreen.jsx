@@ -338,7 +338,7 @@ useEffect(()=>{
         </View>
         <GestureHandlerRootView>
      
-        <View style={{height:'90%'}}> 
+        <View style={{height:'90%' , backgroundColor:'#f5f5f5'}}> 
         <DraggableFlatList
       data={draggedState}
       keyExtractor={item => item.id}

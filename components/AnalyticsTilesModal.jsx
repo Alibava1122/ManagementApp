@@ -70,7 +70,8 @@ import {
                   key={tile.id}
                   {...panResponder.panHandlers}
                   style={[
-                    styles.tileContainer, {backgroundColor:tile.colorCode},
+                    styles.tileContainer, 
+                    // {backgroundColor:tile.colorCode},
                     { transform: [{ translateX: pan.x }, { translateY: pan.y }] },
                   ]}
                 >
@@ -171,10 +172,16 @@ import {
       alignItems: "center",
       padding:5,
       borderWidth:1,
+      backgroundColor:'white',
 
       borderColor:'grey',
          flexDirection:'row',
-      justifyContent:'space-around'
+      justifyContent:'space-around',
+      elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
     },
 
   

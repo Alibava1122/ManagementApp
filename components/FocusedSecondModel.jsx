@@ -92,7 +92,7 @@ const FocusedSecondModel = ({
                 {...panResponder.panHandlers}
                 style={[
                   styles.tileContainer,
-                  { backgroundColor: tile.colorCode },
+                  // { backgroundColor: tile.colorCode },
                   { transform: [{ translateX: pan.x }, { translateY: pan.y }] },
                 ]}
               >
@@ -175,10 +175,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 5,
     borderWidth: 1,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
 
     borderColor: "grey",
     flexDirection: "row",
     justifyContent: "space-around",
+    backgroundColor:'white'
   },
   Text: {
     fontSize: 16,

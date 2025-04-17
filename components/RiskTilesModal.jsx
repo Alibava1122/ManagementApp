@@ -72,7 +72,8 @@ import {
                   key={tile.id}
                   {...panResponder.panHandlers}
                   style={[
-                    styles.tileContainer, {backgroundColor:tile.colorCode},
+                    styles.tileContainer,
+                    //  {backgroundColor:tile.colorCode},
                     { transform: [{ translateX: pan.x }, { translateY: pan.y }] },
                   ]}
                 >
@@ -104,7 +105,7 @@ import {
       left: 45,
       width: width * 0.7,
       // height: "70%",
-      backgroundColor: "white",
+      backgroundColor: "#f5f5f5",
       borderRadius: 20,
       elevation: 5,
       shadowColor: "#000",
@@ -175,7 +176,12 @@ import {
     
       borderWidth:1,
       borderColor:'grey',
-      backgroundColor:'#eed5fa',
+      backgroundColor:'white',
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
      
     },
   

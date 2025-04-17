@@ -120,7 +120,7 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
               <TouchableOpacity
                 style={[
                   styles.tileContainer,
-                  { backgroundColor: item.colorCode },
+                  // { backgroundColor: item.colorCode },
                 ]}
                 onPress={() => {
                   handlePressOutside(item);
@@ -167,7 +167,7 @@ const DroppedMainTiles = ({ setDroppedTiles, droppedTiles }) => {
               <Animated.View
                 style={[
                   styles.expandedContainer,
-                  { backgroundColor: item.colorCode },
+                  // { backgroundColor: item.colorCode },
                   {
                     height: item.expandAnim,
                     marginBottom: item.expandAnim.interpolate({
@@ -234,6 +234,12 @@ const styles = StyleSheet.create({
     borderColor: "grey",
     // marginRight: 7,
     overflow: "visible",
+    backgroundColor:'white',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   textContainer: {
     width: "50%",
@@ -274,6 +280,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     width: "100%",
+    backgroundColor:'white',
 
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -305,7 +312,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
-    bottom: -12,
+    bottom: -10,
   },
   iconContainer: {
     width: 27,

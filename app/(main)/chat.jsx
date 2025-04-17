@@ -12,6 +12,7 @@ import { AntDesign, Ionicons } from "@expo/vector-icons";
 import HistoryModal from "../../components/HistoryModal";
 import { router } from "expo-router";
 import { useChat } from "../../context/ChatContext";
+import DropDowns from "../../components/DropDowns";
 
 const Chat = () => {
   const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false);
@@ -52,7 +53,7 @@ const Chat = () => {
           </TouchableOpacity>
         </View>
 
-        {/* <View style={styles.dropDownsContainer}>
+        <View style={styles.dropDownsContainer}>
         <DropDowns   items={[
             { label: "Creative", value: "Creative" },
             { label: "Precise", value: "Precise" },
@@ -64,7 +65,7 @@ const Chat = () => {
             { label: "Assets", value: "Assets" },
             { label: "Real Estate", value: "RealEstate" },
           ]}/>
-        </View> */}
+        </View>
 
         {/* 2nd dropdown */}
 
